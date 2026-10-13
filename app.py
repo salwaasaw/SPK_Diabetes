@@ -19,6 +19,12 @@ DEFAULT = [
     ["P09", 38, 26.8, 115, 122, 0, 0], ["P10", 48, 29.5, 145, 130, 1, 1],
 ]
 
+# ---------- fungsi style pink soft untuk tabel ----------
+def style_pink(df):
+    return df.style.set_table_styles([
+        {'selector': 'th', 'props': [('background-color', '#ffd1dc'), ('color', '#8b0042'), ('font-weight', 'bold')]},
+        {'selector': 'td', 'props': [('background-color', '#fff0f3'), ('color', '#333333')]}
+    ])
 
 # ---------- data ----------
 def muat_data():
@@ -116,15 +122,15 @@ with tab1:
 
             st.subheader("2. Proses Perhitungan")
             st.markdown("**Langkah 1 - Data pasien**")
-            st.dataframe(pd.DataFrame([[nama, jk] + x], columns=["Nama", "Jenis Kelamin"] + FITUR),
-                         hide_index=True, use_container_width=True)
+            df_p1 = pd.DataFrame([[nama, jk] + x], columns=["Nama", "Jenis Kelamin"] + FITUR)
+            st.dataframe(style_pink(df_p1), hide_index=True, use_container_width=True)
             st.caption("Jenis kelamin hanya identitas, tidak dihitung karena dataset latih tidak memiliki atribut itu.")
 
             st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
-            st.dataframe(pd.DataFrame({"Atribut": FITUR, "Min": h["mn"], "Max": h["mx"],
-                                       "Nilai pasien": x, "Hasil normalisasi": [round(v, 4) for v in h["xn"]]}),
-                         hide_index=True, use_container_width=True)
+            df_norm = pd.DataFrame({"Atribut": FITUR, "Min": h["mn"], "Max": h["mx"],
+                                    "Nilai pasien": x, "Hasil normalisasi": [round(v, 4) for v in h["xn"]]})
+            st.dataframe(style_pink(df_norm), hide_index=True, use_container_width=True)
 
             st.markdown("**Langkah 3 - Jarak Euclidean ke setiap data latih**")
             st.latex(r"d = \sqrt{\sum (x'_{pasien} - x'_{latih})^2}")
@@ -136,7 +142,9 @@ with tab1:
                               columns=["Peringkat", "Pasien"] + FITUR + ["Jarak", "Kelas"])
             warna = lambda row: ["background-color:#ffb3d1;font-weight:bold" if row["Peringkat"] <= k else ""
                                  for _ in row]
-            st.dataframe(df.style.apply(warna, axis=1), hide_index=True, use_container_width=True)
+            st.dataframe(df.style.apply(warna, axis=1).set_table_styles([
+                {'selector': 'th', 'props': [('background-color', '#ffd1dc'), ('color', '#8b0042'), ('font-weight', 'bold')]}
+            ]), hide_index=True, use_container_width=True)
             st.caption(f"Baris berwarna adalah {k} tetangga terdekat.")
 
             st.markdown(f"**Langkah 4 - Voting K = {k} tetangga terdekat**")
@@ -162,9 +170,9 @@ with tab1:
 # ===== tab dataset =====
 with tab2:
     st.subheader("Dataset Latih")
-    st.dataframe(pd.DataFrame([r[:6] + [label(r[6])] for r in data],
-                              columns=["Pasien"] + FITUR + ["Kelas"]),
-                 hide_index=True, use_container_width=True)
+    df_latih = pd.DataFrame([r[:6] + [label(r[6])] for r in data],
+                            columns=["Pasien"] + FITUR + ["Kelas"])
+    st.dataframe(style_pink(df_latih), hide_index=True, use_container_width=True)
 
     st.subheader("Tambah Data Baru ke Dataset")
     with st.form("form_tambah", clear_on_submit=True):
