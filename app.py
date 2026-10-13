@@ -156,7 +156,7 @@ if "data" not in st.session_state:
     st.session_state.data = muat_data()
 data = st.session_state.data
 
-tab1, tab2 = st.tabs(["🔍 Prediksi Pasien", "📋 Kelola Dataset Latih"])
+tab1, tab2 = st.tabs(["🔍 Prediksi Pasien", "📋 Dataset"])
 
 # ===== tab prediksi =====
 with tab1:
@@ -267,7 +267,7 @@ with tab1:
 
 # ===== tab dataset =====
 with tab2:
-    st.subheader("Dataset Latih Aktif")
+    st.subheader("Dataset")
     df_latih = pd.DataFrame(
         [[r[0], int(r[1]), f"{r[2]:.1f}", int(r[3]), int(r[4]), int(r[5]), label(r[6])] for r in data],
         columns=["Pasien"] + FITUR + ["Kelas"]
@@ -275,7 +275,7 @@ with tab2:
     st.dataframe(format_dan_center(df_latih.style), hide_index=True, use_container_width=True)
 
     st.markdown("---")
-    st.subheader("Tambah Data Latih Baru")
+    st.subheader("Tambah Dataset Baru")
     with st.form("form_tambah", clear_on_submit=True):
         a1, a2, a3, a4 = st.columns(4)
         n_id = a1.text_input("Kode Pasien (Cth: P11)")
