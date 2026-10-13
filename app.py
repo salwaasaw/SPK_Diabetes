@@ -198,20 +198,21 @@ with tab1:
             st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
             
-            norm_data = []
+           norm_data = []
             for idx, f_name in enumerate(FITUR):
                 mn_val = h["mn"][idx]
                 mx_val = h["mx"][idx]
                 p_val = x[idx]
                 
-                if f_name == "BMI":
-                    mn_str = f"{mn_val:.1f}"
-                    mx_str = f"{mx_val:.1f}"
-                    p_str = f"{p_val:.1f}"
-                else:
+                # Diseragamkan semuanya pakai 1 desimal (.0 atau .5) agar konsisten ke bawah
+                if f_name == "Riwayat Keluarga":
                     mn_str = f"{int(mn_val)}"
                     mx_str = f"{int(mx_val)}"
                     p_str = f"{int(p_val)}"
+                else:
+                    mn_str = f"{float(mn_val):.1f}"
+                    mx_str = f"{float(mx_val):.1f}"
+                    p_str = f"{float(p_val):.1f}"
                 
                 norm_data.append({
                     "Atribut": f_name,
