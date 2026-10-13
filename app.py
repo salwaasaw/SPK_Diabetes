@@ -78,7 +78,7 @@ st.markdown("""
 .hasil.r{background:linear-gradient(120deg,#2e9b6a,#6fd3a3)}
 .hasil h2{color:white;margin:0 0 6px}
 
-/* --- PERBAIKAN TOMBOL AGAR TIDAK TEGANG, ESTETIK, DAN LEMBUT --- */
+/* --- TOMBOL ESTETIK & LEMBUT --- */
 .stButton>button, .stFormSubmitButton>button {
     border-radius: 12px !important;
     font-weight: 600 !important;
@@ -112,22 +112,22 @@ with tab1:
     with st.form("form_pasien"):
         c1, c2, c3, c4 = st.columns(4)
         nama = c1.text_input("Nama Pasien", value="Pasien Baru" if contoh else "")
-        usia = c2.number_input("Usia (tahun)", min_value=1.0, step=1.0, value=42.0 if contoh else None, format="%.1f")
+        usia = c2.number_input("Usia (tahun)", min_value=1, step=1, value=42 if contoh else None, format="%d")
         bmi = c3.number_input("BMI", min_value=1.0, step=0.1, value=28.5 if contoh else None, format="%.1f")
-        glu = c4.number_input("Glukosa (mg/dL)", min_value=1.0, step=1.0, value=130.0 if contoh else None, format="%.1f")
+        glu = c4.number_input("Glukosa (mg/dL)", min_value=1, step=1, value=130 if contoh else None, format="%d")
         
         c5, c6, c7 = st.columns(3)
-        td = c5.number_input("Tekanan Darah (mmHg)", min_value=1.0, step=1.0, value=128.0 if contoh else None, format="%.1f")
+        td = c5.number_input("Tekanan Darah (mmHg)", min_value=1, step=1, value=128 if contoh else None, format="%d")
         rk = c6.selectbox("Riwayat Diabetes Keluarga", ["0 - Tidak ada", "1 - Ada"],
                           index=1 if contoh else None, placeholder="Pilih")
-        k = c7.number_input("Nilai K", min_value=1, max_value=len(data), step=1, value=min(3, len(data)))
+        k = c7.number_input("Nilai K", min_value=1, max_value=len(data), step=1, value=min(3, len(data)), format="%d")
         kirim = st.form_submit_button("Hitung KNN", type="primary")
 
     if kirim:
         if not nama.strip() or rk is None or None in (usia, bmi, glu, td):
             st.error("Semua kolom wajib diisi: nama, usia, BMI, glukosa, tekanan darah, dan riwayat keluarga.")
         else:
-            x = [usia, bmi, glu, td, int(rk[0])]
+            x = [float(usia), float(bmi), float(glu), float(td), int(rk[0])]
             h = hitung_knn(data, x, int(k))
             k = int(k)
 
@@ -169,7 +169,7 @@ with tab1:
                 f"""<div class="hasil {'t' if t else 'r'}">
                 <h2>{'⚠️ RISIKO DIABETES TINGGI' if t else '✅ RISIKO DIABETES RENDAH'}</h2>
                 Berdasarkan {k} tetangga terdekat ({h['tinggi']} Tinggi, {h['rendah']} Rendah),
-                pasien <b>{nama}</b> ({usia:g} tahun) diklasifikasikan sebagai
+                pasien <b>{nama}</b> ({int(usia)} tahun) diklasifikasikan sebagai
                 <b>{'Risiko Tinggi (kelas 1)' if t else 'Risiko Rendah (kelas 0)'}</b>.<br>
                 {'Disarankan pemeriksaan lanjutan dan konsultasi dokter.' if t else
                  'Pertahankan pola hidup sehat dan lakukan pemeriksaan berkala.'}</div>""",
@@ -186,11 +186,11 @@ with tab2:
     with st.form("form_tambah", clear_on_submit=True):
         a1, a2, a3, a4 = st.columns(4)
         n_id = a1.text_input("Kode Pasien")
-        n_usia = a2.number_input("Usia", min_value=1.0, step=1.0, value=None, format="%.1f")
+        n_usia = a2.number_input("Usia", min_value=1, step=1, value=None, format="%d")
         n_bmi = a3.number_input("BMI", min_value=1.0, step=0.1, value=None, format="%.1f")
-        n_glu = a4.number_input("Glukosa", min_value=1.0, step=1.0, value=None, format="%.1f")
+        n_glu = a4.number_input("Glukosa", min_value=1, step=1, value=None, format="%d")
         b1, b2, b3 = st.columns(3)
-        n_td = b1.number_input("Tekanan Darah", min_value=1.0, step=1.0, value=None, format="%.1f")
+        n_td = b1.number_input("Tekanan Darah", min_value=1, step=1, value=None, format="%d")
         n_rk = b2.selectbox("Riwayat Keluarga", ["0 - Tidak ada", "1 - Ada"])
         n_kls = b3.selectbox("Kelas", ["0 - Rendah", "1 - Tinggi"])
         tambah = st.form_submit_button("Tambah ke Dataset", type="primary")
@@ -200,7 +200,7 @@ with tab2:
         elif any(r[0] == n_id.strip() for r in data):
             st.error("Kode pasien sudah ada, gunakan kode lain.")
         else:
-            data.append([n_id.strip(), n_usia, n_bmi, n_glu, n_td, int(n_rk[0]), int(n_kls[0])])
+            data.append([n_id.strip(), int(n_usia), float(n_bmi), int(n_glu), int(n_td), int(n_rk[0]), int(n_kls[0])])
             simpan_data(data)
             st.success(f"Data {n_id.strip()} berhasil ditambahkan.")
             st.rerun()
