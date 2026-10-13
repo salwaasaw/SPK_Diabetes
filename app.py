@@ -156,7 +156,7 @@ if "data" not in st.session_state:
     st.session_state.data = muat_data()
 data = st.session_state.data
 
-tab1, tab2 = st.tabs(["🔍 Prediksi Pasien", "📋 Kelola Dataset Latih"])
+tab1, tab2 = st.tabs(["🔍 Prediksi Pasien", "📋 Kelola Dataset"])
 
 # ===== tab prediksi =====
 with tab1:
