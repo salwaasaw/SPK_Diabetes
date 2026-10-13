@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Modern Teal & Slate (Clean, Professional, & Centered Tables)
+Tema: Royal Indigo & Amber (Unique, Elegant, NO PINK / NO GREEN)
 Jalankan:  python -m streamlit run app.py
 """
 import json
@@ -70,30 +70,30 @@ def styling_tabel(df_styler):
     return df_styler.set_properties(**{'text-align': 'center'})
 
 
-# ---------- tampilan (Modern Teal & Slate) ----------
-st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="💡", layout="wide")
+# ---------- tampilan (Royal Indigo & Amber) ----------
+st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="👑", layout="wide")
 st.markdown("""
 <style>
-/* Background utama Slate / Cool Gray yang bersih */
+/* Background utama abu-abu terang yang bersih */
 .stApp {
     background-color: #f8fafc;
     color: #1e293b;
 }
 
-/* Header Hero: Modern Teal & Dark Slate */
+/* Header Hero: Royal Indigo (Ungu Mewah) */
 .hero {
-    background: linear-gradient(135deg, #0f766e, #115e59);
+    background: linear-gradient(135deg, #4338ca, #6366f1);
     color: white;
     padding: 30px 20px;
     border-radius: 16px;
     text-align: center;
     margin-bottom: 24px;
-    box-shadow: 0 10px 25px rgba(15, 118, 110, 0.2);
+    box-shadow: 0 10px 25px rgba(67, 56, 202, 0.2);
 }
 .hero h1 { margin: 0; font-size: 2.2rem; color: white; font-weight: 700; }
-.hero p { margin: 8px 0 0; color: #ccfbf1; font-size: 1.05rem; }
+.hero p { margin: 8px 0 0; color: #e0e7ff; font-size: 1.05rem; }
 
-/* Kartu Hasil Prediksi */
+/* Kartu Hasil Prediksi: Amber (Tinggi) & Indigo (Rendah) */
 .hasil {
     border-radius: 14px;
     padding: 24px;
@@ -102,25 +102,25 @@ st.markdown("""
     margin-top: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
-.hasil.t { background: linear-gradient(135deg, #be123c, #e11d48); }
-.hasil.r { background: linear-gradient(135deg, #047857, #059669); }
+.hasil.t { background: linear-gradient(135deg, #b45309, #d97706); } /* Amber / Oren Keemasan */
+.hasil.r { background: linear-gradient(135deg, #4338ca, #6366f1); } /* Royal Indigo */
 .hasil h2 { color: white; margin: 0 0 8px; font-size: 1.5rem; }
 
 /* Tombol Interaktif */
 .stButton>button, .stFormSubmitButton>button {
     border-radius: 10px !important;
     font-weight: 600 !important;
-    background: linear-gradient(135deg, #0f766e, #115e59) !important;
+    background: linear-gradient(135deg, #4338ca, #6366f1) !important;
     color: white !important;
     border: none !important;
     padding: 0.6rem 1.4rem !important;
-    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25) !important;
+    box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25) !important;
     transition: all 0.3s ease !important;
     width: 100%;
 }
 .stButton>button:hover, .stFormSubmitButton>button:hover {
-    background: linear-gradient(135deg, #115e59, #134e4a) !important;
-    box-shadow: 0 6px 16px rgba(15, 118, 110, 0.4) !important;
+    background: linear-gradient(135deg, #3730a3, #4338ca) !important;
+    box-shadow: 0 6px 16px rgba(67, 56, 202, 0.4) !important;
     transform: translateY(-2px);
 }
 
@@ -135,8 +135,8 @@ div[data-testid="stDataFrame"] table {
 }
 div[data-testid="stDataFrame"] th {
     text-align: center !important;
-    background-color: #f1f5f9 !important;
-    color: #0f766e !important;
+    background-color: #eef2ff !important;
+    color: #4338ca !important;
 }
 div[data-testid="stDataFrame"] th div {
     justify-content: center !important;
@@ -147,13 +147,13 @@ div[data-testid="stDataFrame"] td {
 }
 
 h2, h3 {
-    color: #115e59;
+    color: #3730a3;
     font-weight: 600;
 }
 </style>
 
 <div class="hero">
-    <h1>💡 Sistem Pendukung Keputusan Risiko Diabetes</h1>
+    <h1>👑 Sistem Pendukung Keputusan Risiko Diabetes</h1>
     <p>Analisis Klinis Berbasis Algoritme K-Nearest Neighbors (KNN)</p>
 </div>
 """, unsafe_allow_html=True)
@@ -225,10 +225,11 @@ with tab1:
             )
             df_jarak["BMI"] = df_jarak["BMI"].apply(lambda val: f"{val:.1f}")
             
-            warna_baris = lambda row: ["background-color: #ccfbf1; font-weight: bold; color: #115e59;" if row["Peringkat"] <= k_val else "" for _ in row]
+            # Warna sorotan baris: Ungu muda (Indigo soft)
+            warna_baris = lambda row: ["background-color: #e0e7ff; font-weight: bold; color: #3730a3;" if row["Peringkat"] <= k_val else "" for _ in row]
             df_jarak_styled = df_jarak.style.apply(warna_baris, axis=1)
             st.dataframe(styling_tabel(df_jarak_styled), hide_index=True, use_container_width=True)
-            st.caption(f"Baris dengan latar belakang toska lembut adalah {k_val} tetangga terdekat.")
+            st.caption(f"Baris dengan latar belakang ungu lembut adalah {k_val} tetangga terdekat.")
 
             st.markdown(f"**Langkah 4 - Voting K = {k_val} Tetangga Terdekat**")
             st.write("Tetangga Terpilih: " + ", ".join(f"<b>{r['id']}</b> ({label(r['kelas'])})" for r in h["nb"]), unsafe_allow_html=True)
