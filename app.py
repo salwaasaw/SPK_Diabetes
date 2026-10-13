@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Sunset Gold & Charcoal (Fixed Number Formatting)
+Tema: Sunset Gold & Charcoal (Final Fixed & Clean Formatting)
 Jalankan:  python -m streamlit run app.py
 """
 import json
@@ -195,7 +195,7 @@ with tab1:
                                      columns=["Nama"] + FITUR)
             st.dataframe(format_dan_center(df_pasien.style), hide_index=True, use_container_width=True)
 
-           st.markdown("**Langkah 2 - Normalisasi Min-Max**")
+            st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
             
             norm_data = []
