@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Sunset Gold & Charcoal (Final Clean & Perfect Formatting)
+Tema: Sunset Gold & Charcoal (Final Uniform Formatting)
 Jalankan:  python -m streamlit run app.py
 """
 import json
@@ -198,13 +198,12 @@ with tab1:
             st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
             
-           norm_data = []
+            norm_data = []
             for idx, f_name in enumerate(FITUR):
                 mn_val = h["mn"][idx]
                 mx_val = h["mx"][idx]
                 p_val = x[idx]
                 
-                # Diseragamkan semuanya pakai 1 desimal (.0 atau .5) agar konsisten ke bawah
                 if f_name == "Riwayat Keluarga":
                     mn_str = f"{int(mn_val)}"
                     mx_str = f"{int(mx_val)}"
@@ -317,8 +316,8 @@ with tab2:
             st.success("🗑️ Data yang dipilih berhasil dihapus.")
             st.rerun()
             
-    if d2.button("Reset ke Dataset Awal"):
+    if d2.button("Reset ke Dataset Awal Modul"):
         st.session_state.data = [r[:] for r in DEFAULT]
         simpan_data(st.session_state.data)
-        st.success("🔄 Dataset berhasil dikembalikan ke pengaturan awal.")
+        st.success("🔄 Dataset berhasil dikembalikan ke pengaturan awal modul.")
         st.rerun()
