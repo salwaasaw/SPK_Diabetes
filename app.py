@@ -1,5 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
+Tema: Rose Gold / Coral Wellness (Modern & Mobile-Friendly)
 Jalankan:  python -m streamlit run app.py
 """
 import json
@@ -63,52 +64,98 @@ def hitung_knn(data, x, k):
 
 label = lambda c: "Tinggi" if c == 1 else "Rendah"
 
-# ---------- tampilan ----------
-st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="🌸", layout="wide")
+# ---------- tampilan (Rose Gold / Coral Wellness) ----------
+st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="✨", layout="wide")
 st.markdown("""
 <style>
+/* Background utama Cream / Off-White yang lembut */
 .stApp {
-    background-color: #fff5f8;
+    background-color: #fafaf9;
+    color: #292524;
 }
-.hero{background:linear-gradient(120deg,#e6407f,#ff8fb8);color:white;padding:26px;border-radius:20px;
-     text-align:center;margin-bottom:18px}
-.hero h1{margin:0;font-size:2rem;color:white}.hero p{margin:4px 0 0;color:white}
-.hasil{border-radius:18px;padding:22px;text-align:center;color:white;margin-top:8px}
-.hasil.t{background:linear-gradient(120deg,#d6264f,#ff6b8f)}
-.hasil.r{background:linear-gradient(120deg,#2e9b6a,#6fd3a3)}
-.hasil h2{color:white;margin:0 0 6px}
 
-/* --- TOMBOL ESTETIK & LEMBUT --- */
+/* Header Hero dengan Tema Rose Gold / Coral */
+.hero {
+    background: linear-gradient(135deg, #f43f5e, #fb7185);
+    color: white;
+    padding: 30px 20px;
+    border-radius: 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 25px rgba(244, 63, 94, 0.2);
+}
+.hero h1 { margin: 0; font-size: 2.2rem; color: white; font-weight: 700; }
+.hero p { margin: 8px 0 0; color: #ffe4e6; font-size: 1.05rem; }
+
+/* Kartu Hasil Prediksi */
+.hasil {
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    color: white;
+    margin-top: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+.hasil.t { background: linear-gradient(135deg, #e11d48, #f43f5e); }
+.hasil.r { background: linear-gradient(135deg, #059669, #10b981); }
+.hasil h2 { color: white; margin: 0 0 8px; font-size: 1.5rem; }
+
+/* Tombol Interaktif */
 .stButton>button, .stFormSubmitButton>button {
     border-radius: 12px !important;
     font-weight: 600 !important;
-    background: linear-gradient(135deg, #ff6b97, #e6407f) !important;
+    background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
     color: white !important;
     border: none !important;
-    padding: 0.5rem 1.2rem !important;
-    box-shadow: 0 4px 10px rgba(230, 64, 127, 0.25) !important;
+    padding: 0.6rem 1.4rem !important;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3) !important;
     transition: all 0.3s ease !important;
+    width: 100%;
 }
 .stButton>button:hover, .stFormSubmitButton>button:hover {
-    background: linear-gradient(135deg, #e6407f, #c7255f) !important;
-    box-shadow: 0 6px 14px rgba(230, 64, 127, 0.4) !important;
+    background: linear-gradient(135deg, #e11d48, #be123c) !important;
+    box-shadow: 0 6px 16px rgba(244, 63, 94, 0.45) !important;
     transform: translateY(-2px);
 }
+
+/* Penataan Tabel: Rata Tengah Sempurna */
+div[data-testid="stDataFrame"] {
+    display: flex;
+    justify-content: center;
+}
+div[data-testid="stDataFrame"] th div {
+    justify-content: center !important;
+    text-align: center !important;
+    font-weight: 600 !important;
+}
+div[data-testid="stDataFrame"] td {
+    text-align: center !important;
+}
+
+/* Subheader & Teks */
+h2, h3 {
+    color: #881337;
+    font-weight: 600;
+}
 </style>
-<div class="hero"><h1>🌸 Sistem Pendukung Keputusan Risiko Diabetes</h1>
-<p>Klasifikasi pasien dengan algoritma K-Nearest Neighbors (KNN)</p></div>
+
+<div class="hero">
+    <h1>✨ Sistem Pendukung Keputusan Risiko Diabetes</h1>
+    <p>Analisis Klinis Berbasis Algoritme K-Nearest Neighbors (KNN)</p>
+</div>
 """, unsafe_allow_html=True)
 
 if "data" not in st.session_state:
     st.session_state.data = muat_data()
 data = st.session_state.data
 
-tab1, tab2 = st.tabs(["Prediksi", "Dataset"])
+tab1, tab2 = st.tabs(["🔍 Prediksi Pasien", "📋 Kelola Dataset Latih"])
 
 # ===== tab prediksi =====
 with tab1:
     st.subheader("1. Input Data Pasien Baru")
-    contoh = st.checkbox("Isi dengan contoh pasien baru dari soal (42, 28.5, 130, 128, 1)")
+    contoh = st.checkbox("Isi dengan contoh pasien baru dari soal (Usia: 42, BMI: 28.5, Glukosa: 130, TD: 128, Riwayat: 1)")
+    
     with st.form("form_pasien"):
         c1, c2, c3, c4 = st.columns(4)
         nama = c1.text_input("Nama Pasien", value="Pasien Baru" if contoh else "")
@@ -119,108 +166,131 @@ with tab1:
         c5, c6, c7 = st.columns(3)
         td = c5.number_input("Tekanan Darah (mmHg)", min_value=1, step=1, value=128 if contoh else None, format="%d")
         rk = c6.selectbox("Riwayat Diabetes Keluarga", ["0 - Tidak ada", "1 - Ada"],
-                          index=1 if contoh else None, placeholder="Pilih")
+                          index=1 if contoh else None, placeholder="Pilih Riwayat")
         k = c7.number_input("Nilai K", min_value=1, max_value=len(data), step=1, value=min(3, len(data)), format="%d")
-        kirim = st.form_submit_button("Hitung KNN", type="primary")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        kirim = st.form_submit_button("Hitung Klasifikasi KNN", type="primary")
 
     if kirim:
         if not nama.strip() or rk is None or None in (usia, bmi, glu, td):
-            st.error("Semua kolom wajib diisi: nama, usia, BMI, glukosa, tekanan darah, dan riwayat keluarga.")
+            st.warning("⚠️ Mohon lengkapi semua kolom input data pasien terlebih dahulu.")
         else:
             x = [float(usia), float(bmi), float(glu), float(td), int(rk[0])]
             h = hitung_knn(data, x, int(k))
-            k = int(k)
+            k_val = int(k)
 
-            st.subheader("2. Proses Perhitungan")
-            st.markdown("**Langkah 1 - Data pasien**")
+            st.markdown("---")
+            st.subheader("2. Tahapan Perhitungan Algoritme")
+            
+            st.markdown("**Langkah 1 - Data Pasien Baru**")
             df_pasien = pd.DataFrame([[nama] + x], columns=["Nama"] + FITUR)
             df_pasien["BMI"] = df_pasien["BMI"].apply(lambda val: f"{val:.1f}")
             st.dataframe(df_pasien, hide_index=True, use_container_width=True)
 
             st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
-            st.dataframe(pd.DataFrame({"Atribut": FITUR, "Min": h["mn"], "Max": h["mx"],
-                                       "Nilai pasien": x, "Hasil normalisasi": [round(v, 4) for v in h["xn"]]}),
-                         hide_index=True, use_container_width=True)
+            st.dataframe(pd.DataFrame({
+                "Atribut": FITUR, 
+                "Min": h["mn"], 
+                "Max": h["mx"],
+                "Nilai Pasien": x, 
+                "Hasil Normalisasi": [round(v, 4) for v in h["xn"]]
+            }), hide_index=True, use_container_width=True)
 
-            st.markdown("**Langkah 3 - Jarak Euclidean ke setiap data latih**")
+            st.markdown("**Langkah 3 - Penghitungan Jarak Euclidean**")
             st.latex(r"d = \sqrt{\sum (x'_{pasien} - x'_{latih})^2}")
             r0 = h["rows"][0]
             suku = " + ".join(f"({a:.3f}-{b:.3f})^2" for a, b in zip(h["xn"], r0["fn"]))
-            st.caption(f"Contoh {r0['id']}: d = akar({suku}) = {r0['d']:.4f}")
+            st.caption(f"Contoh Perhitungan Jarak {r0['id']}: d = √({suku}) = {r0['d']:.4f}")
             
-            df_jarak = pd.DataFrame([[i + 1, r["id"]] + r["f"] + [round(r["d"], 4), label(r["kelas"])]
-                                     for i, r in enumerate(h["rows"])],
-                                    columns=["Peringkat", "Pasien"] + FITUR + ["Jarak", "Kelas"])
+            df_jarak = pd.DataFrame(
+                [[i + 1, r["id"]] + r["f"] + [round(r["d"], 4), label(r["kelas"])]
+                 for i, r in enumerate(h["rows"])],
+                columns=["Peringkat", "Pasien"] + FITUR + ["Jarak", "Kelas"]
+            )
             df_jarak["BMI"] = df_jarak["BMI"].apply(lambda val: f"{val:.1f}")
             
-            warna = lambda row: ["background-color:#ffb3d1;font-weight:bold" if row["Peringkat"] <= k else ""
-                                 for _ in row]
-            st.dataframe(df_jarak.style.apply(warna, axis=1), hide_index=True, use_container_width=True)
-            st.caption(f"Baris berwarna adalah {k} tetangga terdekat.")
+            warna_baris = lambda row: ["background-color: #ffe4e6; font-weight: bold; color: #9f1239;" if row["Peringkat"] <= k_val else "" for _ in row]
+            st.dataframe(df_jarak.style.apply(warna_baris, axis=1), hide_index=True, use_container_width=True)
+            st.caption(f"Baris dengan latar belakang pink lembut adalah {k_val} tetangga terdekat.")
 
-            st.markdown(f"**Langkah 4 - Voting K = {k} tetangga terdekat**")
-            st.write("Tetangga: " + ", ".join(f"{r['id']} ({label(r['kelas'])})" for r in h["nb"]))
+            st.markdown(f"**Langkah 4 - Voting K = {k_val} Tetangga Terdekat**")
+            st.write("Tetangga Terpilih: " + ", ".join(f"<b>{r['id']}</b> ({label(r['kelas'])})" for r in h["nb"]), unsafe_allow_html=True)
+            
             m1, m2 = st.columns(2)
-            m1.metric("Suara Risiko Tinggi", h["tinggi"])
-            m2.metric("Suara Risiko Rendah", h["rendah"])
+            m1.metric("Suara Risiko Tinggi", f"{h['tinggi']} Suara")
+            m2.metric("Suara Risiko Rendah", f"{h['rendah']} Suara")
+            
             if h["tinggi"] == h["rendah"]:
-                st.caption("Suara seimbang, kelas ditentukan dari tetangga terdekat.")
+                st.info("ℹ️ Jumlah suara seimbang, kelas akhir ditentukan berdasarkan tetangga terdekat dengan jarak minimum.")
 
-            st.subheader("3. Kesimpulan")
-            t = h["hasil"] == 1
+            st.markdown("---")
+            st.subheader("3. Kesimpulan Klasifikasi")
+            t_status = h["hasil"] == 1
             st.markdown(
-                f"""<div class="hasil {'t' if t else 'r'}">
-                <h2>{'⚠️ RISIKO DIABETES TINGGI' if t else '✅ RISIKO DIABETES RENDAH'}</h2>
-                Berdasarkan {k} tetangga terdekat ({h['tinggi']} Tinggi, {h['rendah']} Rendah),
-                pasien <b>{nama}</b> ({int(usia)} tahun) diklasifikasikan sebagai
-                <b>{'Risiko Tinggi (kelas 1)' if t else 'Risiko Rendah (kelas 0)'}</b>.<br>
-                {'Disarankan pemeriksaan lanjutan dan konsultasi dokter.' if t else
-                 'Pertahankan pola hidup sehat dan lakukan pemeriksaan berkala.'}</div>""",
-                unsafe_allow_html=True)
+                f"""<div class="hasil {'t' if t_status else 'r'}">
+                <h2>{'⚠️ RISIKO DIABETES TINGGI' if t_status else '✅ RISIKO DIABETES RENDAH'}</h2>
+                Berdasarkan {k_val} tetangga terdekat ({h['tinggi']} Tinggi, {h['rendah']} Rendah),<br>
+                pasien <b>{nama}</b> ({int(usia)} tahun) diklasifikasikan ke dalam kategori<br>
+                <b>{'Risiko Tinggi (Kelas 1)' if t_status else 'Risiko Rendah (Kelas 0)'}</b>.<br><br>
+                <i style="font-size: 0.9rem;">{'Rekomendasi: Segera lakukan pemeriksaan medis lanjutan dan konsultasi dokter.' if t_status else 'Rekomendasi: Pertahankan pola hidup sehat dan lakukan evaluasi berkala.'}</i>
+                </div>""",
+                unsafe_allow_html=True
+            )
 
 # ===== tab dataset =====
 with tab2:
-    st.subheader("Dataset Latih")
+    st.subheader("Dataset Latih Aktif")
     df_latih = pd.DataFrame([r[:6] + [label(r[6])] for r in data],
                             columns=["Pasien"] + FITUR + ["Kelas"])
     df_latih["BMI"] = df_latih["BMI"].apply(lambda val: f"{val:.1f}")
     st.dataframe(df_latih, hide_index=True, use_container_width=True)
 
-    st.subheader("Tambah Data Baru ke Dataset")
+    st.markdown("---")
+    st.subheader("Tambah Data Latih Baru")
     with st.form("form_tambah", clear_on_submit=True):
         a1, a2, a3, a4 = st.columns(4)
-        n_id = a1.text_input("Kode Pasien")
+        n_id = a1.text_input("Kode Pasien (Cth: P11)")
         n_usia = a2.number_input("Usia", min_value=1, step=1, value=None, format="%d")
         n_bmi = a3.number_input("BMI", min_value=1.0, step=0.1, value=None, format="%.1f")
         n_glu = a4.number_input("Glukosa", min_value=1, step=1, value=None, format="%d")
+        
         b1, b2, b3 = st.columns(3)
         n_td = b1.number_input("Tekanan Darah", min_value=1, step=1, value=None, format="%d")
         n_rk = b2.selectbox("Riwayat Keluarga", ["0 - Tidak ada", "1 - Ada"])
-        n_kls = b3.selectbox("Kelas", ["0 - Rendah", "1 - Tinggi"])
-        tambah = st.form_submit_button("Tambah ke Dataset", type="primary")
+        n_kls = b3.selectbox("Kelas Target", ["0 - Rendah", "1 - Tinggi"])
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        tambah = st.form_submit_button("Simpan Data ke Dataset", type="primary")
+        
     if tambah:
         if not n_id.strip() or None in (n_usia, n_bmi, n_glu, n_td):
-            st.error("Lengkapi semua kolom data baru.")
+            st.error("❌ Mohon lengkapi seluruh kolom tambah data baru.")
         elif any(r[0] == n_id.strip() for r in data):
-            st.error("Kode pasien sudah ada, gunakan kode lain.")
+            st.error(f"❌ Kode pasien '{n_id.strip()}' sudah terdaftar dalam dataset.")
         else:
             data.append([n_id.strip(), int(n_usia), float(n_bmi), int(n_glu), int(n_td), int(n_rk[0]), int(n_kls[0])])
             simpan_data(data)
-            st.success(f"Data {n_id.strip()} berhasil ditambahkan.")
+            st.success(f"✨ Data pasien {n_id.strip()} berhasil ditambahkan ke dataset!")
             st.rerun()
 
-    st.subheader("Hapus Data")
-    hapus = st.multiselect("Pilih kode pasien yang akan dihapus", [r[0] for r in data])
+    st.markdown("---")
+    st.subheader("Manajemen & Pembersihan Data")
+    hapus = st.multiselect("Pilih kode pasien yang akan dihapus dari dataset", [r[0] for r in data])
     d1, d2 = st.columns(2)
-    if d1.button("Hapus terpilih") and hapus:
+    
+    if d1.button("Hapus Data Terpilih") and hapus:
         if len(hapus) >= len(data):
-            st.error("Dataset minimal berisi 1 data.")
+            st.error("❌ Dataset tidak boleh kosong (minimal menyisakan 1 data).")
         else:
             st.session_state.data = [r for r in data if r[0] not in hapus]
             simpan_data(st.session_state.data)
+            st.success("🗑️ Data yang dipilih berhasil dihapus.")
             st.rerun()
-    if d2.button("Kembalikan dataset awal"):
+            
+    if d2.button("Reset ke Dataset Awal Modul"):
         st.session_state.data = [r[:] for r in DEFAULT]
         simpan_data(st.session_state.data)
+        st.success("🔄 Dataset berhasil dikembalikan ke pengaturan awal modul.")
         st.rerun()
