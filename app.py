@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Rose Gold / Coral Wellness (Modern & Mobile-Friendly)
+Tema: Modern Teal & Slate (Clean, Professional, & Centered Tables)
 Jalankan:  python -m streamlit run app.py
 """
 import json
@@ -64,83 +64,96 @@ def hitung_knn(data, x, k):
 
 label = lambda c: "Tinggi" if c == 1 else "Rendah"
 
-# ---------- tampilan (Rose Gold / Coral Wellness) ----------
-st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="✨", layout="wide")
+
+# ---------- helper untuk center alignment tabel ----------
+def styling_tabel(df_styler):
+    return df_styler.set_properties(**{'text-align': 'center'})
+
+
+# ---------- tampilan (Modern Teal & Slate) ----------
+st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="💡", layout="wide")
 st.markdown("""
 <style>
-/* Background utama Cream / Off-White yang lembut */
+/* Background utama Slate / Cool Gray yang bersih */
 .stApp {
-    background-color: #fafaf9;
-    color: #292524;
+    background-color: #f8fafc;
+    color: #1e293b;
 }
 
-/* Header Hero dengan Tema Rose Gold / Coral */
+/* Header Hero: Modern Teal & Dark Slate */
 .hero {
-    background: linear-gradient(135deg, #f43f5e, #fb7185);
+    background: linear-gradient(135deg, #0f766e, #115e59);
     color: white;
     padding: 30px 20px;
-    border-radius: 20px;
+    border-radius: 16px;
     text-align: center;
     margin-bottom: 24px;
-    box-shadow: 0 10px 25px rgba(244, 63, 94, 0.2);
+    box-shadow: 0 10px 25px rgba(15, 118, 110, 0.2);
 }
 .hero h1 { margin: 0; font-size: 2.2rem; color: white; font-weight: 700; }
-.hero p { margin: 8px 0 0; color: #ffe4e6; font-size: 1.05rem; }
+.hero p { margin: 8px 0 0; color: #ccfbf1; font-size: 1.05rem; }
 
 /* Kartu Hasil Prediksi */
 .hasil {
-    border-radius: 16px;
+    border-radius: 14px;
     padding: 24px;
     text-align: center;
     color: white;
     margin-top: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
-.hasil.t { background: linear-gradient(135deg, #e11d48, #f43f5e); }
-.hasil.r { background: linear-gradient(135deg, #059669, #10b981); }
+.hasil.t { background: linear-gradient(135deg, #be123c, #e11d48); }
+.hasil.r { background: linear-gradient(135deg, #047857, #059669); }
 .hasil h2 { color: white; margin: 0 0 8px; font-size: 1.5rem; }
 
 /* Tombol Interaktif */
 .stButton>button, .stFormSubmitButton>button {
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     font-weight: 600 !important;
-    background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+    background: linear-gradient(135deg, #0f766e, #115e59) !important;
     color: white !important;
     border: none !important;
     padding: 0.6rem 1.4rem !important;
-    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25) !important;
     transition: all 0.3s ease !important;
     width: 100%;
 }
 .stButton>button:hover, .stFormSubmitButton>button:hover {
-    background: linear-gradient(135deg, #e11d48, #be123c) !important;
-    box-shadow: 0 6px 16px rgba(244, 63, 94, 0.45) !important;
+    background: linear-gradient(135deg, #115e59, #134e4a) !important;
+    box-shadow: 0 6px 16px rgba(15, 118, 110, 0.4) !important;
     transform: translateY(-2px);
 }
 
-/* Penataan Tabel: Rata Tengah Sempurna */
+/* Memaksa seluruh tabel & header agar rata tengah (Center Alignment) */
 div[data-testid="stDataFrame"] {
     display: flex;
     justify-content: center;
+    width: 100%;
+}
+div[data-testid="stDataFrame"] table {
+    margin: 0 auto;
+}
+div[data-testid="stDataFrame"] th {
+    text-align: center !important;
+    background-color: #f1f5f9 !important;
+    color: #0f766e !important;
 }
 div[data-testid="stDataFrame"] th div {
     justify-content: center !important;
     text-align: center !important;
-    font-weight: 600 !important;
 }
 div[data-testid="stDataFrame"] td {
     text-align: center !important;
 }
 
-/* Subheader & Teks */
 h2, h3 {
-    color: #881337;
+    color: #115e59;
     font-weight: 600;
 }
 </style>
 
 <div class="hero">
-    <h1>✨ Sistem Pendukung Keputusan Risiko Diabetes</h1>
+    <h1>💡 Sistem Pendukung Keputusan Risiko Diabetes</h1>
     <p>Analisis Klinis Berbasis Algoritme K-Nearest Neighbors (KNN)</p>
 </div>
 """, unsafe_allow_html=True)
@@ -186,17 +199,18 @@ with tab1:
             st.markdown("**Langkah 1 - Data Pasien Baru**")
             df_pasien = pd.DataFrame([[nama] + x], columns=["Nama"] + FITUR)
             df_pasien["BMI"] = df_pasien["BMI"].apply(lambda val: f"{val:.1f}")
-            st.dataframe(df_pasien, hide_index=True, use_container_width=True)
+            st.dataframe(styling_tabel(df_pasien.style), hide_index=True, use_container_width=True)
 
             st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
-            st.dataframe(pd.DataFrame({
+            df_norm = pd.DataFrame({
                 "Atribut": FITUR, 
                 "Min": h["mn"], 
                 "Max": h["mx"],
                 "Nilai Pasien": x, 
                 "Hasil Normalisasi": [round(v, 4) for v in h["xn"]]
-            }), hide_index=True, use_container_width=True)
+            })
+            st.dataframe(styling_tabel(df_norm.style), hide_index=True, use_container_width=True)
 
             st.markdown("**Langkah 3 - Penghitungan Jarak Euclidean**")
             st.latex(r"d = \sqrt{\sum (x'_{pasien} - x'_{latih})^2}")
@@ -211,9 +225,10 @@ with tab1:
             )
             df_jarak["BMI"] = df_jarak["BMI"].apply(lambda val: f"{val:.1f}")
             
-            warna_baris = lambda row: ["background-color: #ffe4e6; font-weight: bold; color: #9f1239;" if row["Peringkat"] <= k_val else "" for _ in row]
-            st.dataframe(df_jarak.style.apply(warna_baris, axis=1), hide_index=True, use_container_width=True)
-            st.caption(f"Baris dengan latar belakang pink lembut adalah {k_val} tetangga terdekat.")
+            warna_baris = lambda row: ["background-color: #ccfbf1; font-weight: bold; color: #115e59;" if row["Peringkat"] <= k_val else "" for _ in row]
+            df_jarak_styled = df_jarak.style.apply(warna_baris, axis=1)
+            st.dataframe(styling_tabel(df_jarak_styled), hide_index=True, use_container_width=True)
+            st.caption(f"Baris dengan latar belakang toska lembut adalah {k_val} tetangga terdekat.")
 
             st.markdown(f"**Langkah 4 - Voting K = {k_val} Tetangga Terdekat**")
             st.write("Tetangga Terpilih: " + ", ".join(f"<b>{r['id']}</b> ({label(r['kelas'])})" for r in h["nb"]), unsafe_allow_html=True)
@@ -245,7 +260,7 @@ with tab2:
     df_latih = pd.DataFrame([r[:6] + [label(r[6])] for r in data],
                             columns=["Pasien"] + FITUR + ["Kelas"])
     df_latih["BMI"] = df_latih["BMI"].apply(lambda val: f"{val:.1f}")
-    st.dataframe(df_latih, hide_index=True, use_container_width=True)
+    st.dataframe(styling_tabel(df_latih.style), hide_index=True, use_container_width=True)
 
     st.markdown("---")
     st.subheader("Tambah Data Latih Baru")
