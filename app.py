@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Sunset Gold & Charcoal (Warm Amber, Gold, & Professional Gray)
+Tema: Sunset Gold & Charcoal (Fixed Number Formatting)
 Jalankan:  python -m streamlit run app.py
 """
 import json
@@ -65,8 +65,8 @@ def hitung_knn(data, x, k):
 label = lambda c: "Tinggi" if c == 1 else "Rendah"
 
 
-# ---------- helper untuk center alignment tabel ----------
-def styling_tabel(df_styler):
+# ---------- helper untuk format & center alignment tabel ----------
+def format_dan_center(df_styler):
     return df_styler.set_properties(**{'text-align': 'center'})
 
 
@@ -74,13 +74,10 @@ def styling_tabel(df_styler):
 st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="✨", layout="wide")
 st.markdown("""
 <style>
-/* Background utama abu-abu gelap hangat / Charcoal terang */
 .stApp {
     background-color: #fafaf9;
     color: #292524;
 }
-
-/* Header Hero: Sunset Gold & Warm Amber */
 .hero {
     background: linear-gradient(135deg, #d97706, #b45309);
     color: white;
@@ -93,7 +90,6 @@ st.markdown("""
 .hero h1 { margin: 0; font-size: 2.2rem; color: white; font-weight: 700; }
 .hero p { margin: 8px 0 0; color: #fef3c7; font-size: 1.05rem; }
 
-/* Kartu Hasil Prediksi: Deep Amber (Tinggi) & Charcoal Elegant (Rendah) */
 .hasil {
     border-radius: 14px;
     padding: 24px;
@@ -102,11 +98,10 @@ st.markdown("""
     margin-top: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
-.hasil.t { background: linear-gradient(135deg, #b45309, #92400e); } /* Amber Gelap */
-.hasil.r { background: linear-gradient(135deg, #374151, #1f2937); } /* Charcoal Mewah */
+.hasil.t { background: linear-gradient(135deg, #b45309, #92400e); }
+.hasil.r { background: linear-gradient(135deg, #374151, #1f2937); }
 .hasil h2 { color: white; margin: 0 0 8px; font-size: 1.5rem; }
 
-/* Tombol Interaktif */
 .stButton>button, .stFormSubmitButton>button {
     border-radius: 10px !important;
     font-weight: 600 !important;
@@ -124,7 +119,6 @@ st.markdown("""
     transform: translateY(-2px);
 }
 
-/* Memaksa seluruh tabel & header agar rata tengah (Center Alignment) */
 div[data-testid="stDataFrame"] {
     display: flex;
     justify-content: center;
@@ -197,20 +191,20 @@ with tab1:
             st.subheader("2. Tahapan Perhitungan Algoritme")
             
             st.markdown("**Langkah 1 - Data Pasien Baru**")
-            df_pasien = pd.DataFrame([[nama] + x], columns=["Nama"] + FITUR)
-            df_pasien["BMI"] = df_pasien["BMI"].apply(lambda val: f"{val:.1f}")
-            st.dataframe(styling_tabel(df_pasien.style), hide_index=True, use_container_width=True)
+            df_pasien = pd.DataFrame([[nama, int(usia), f"{float(bmi):.1f}", int(glu), int(td), int(rk[0])]], 
+                                     columns=["Nama"] + FITUR)
+            st.dataframe(format_dan_center(df_pasien.style), hide_index=True, use_container_width=True)
 
             st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
             df_norm = pd.DataFrame({
                 "Atribut": FITUR, 
-                "Min": h["mn"], 
-                "Max": h["mx"],
+                "Min": [float(v) for v in h["mn"]], 
+                "Max": [float(v) for v in h["mx"]],
                 "Nilai Pasien": x, 
                 "Hasil Normalisasi": [round(v, 4) for v in h["xn"]]
             })
-            st.dataframe(styling_tabel(df_norm.style), hide_index=True, use_container_width=True)
+            st.dataframe(format_dan_center(df_norm.style), hide_index=True, use_container_width=True)
 
             st.markdown("**Langkah 3 - Penghitungan Jarak Euclidean**")
             st.latex(r"d = \sqrt{\sum (x'_{pasien} - x'_{latih})^2}")
@@ -219,16 +213,14 @@ with tab1:
             st.caption(f"Contoh Perhitungan Jarak {r0['id']}: d = √({suku}) = {r0['d']:.4f}")
             
             df_jarak = pd.DataFrame(
-                [[i + 1, r["id"]] + r["f"] + [round(r["d"], 4), label(r["kelas"])]
+                [[i + 1, r["id"], int(r["f"][0]), f"{r['f'][1]:.1f}", int(r["f"][2]), int(r["f"][3]), int(r["f"][4]), round(r["d"], 4), label(r["kelas"])]
                  for i, r in enumerate(h["rows"])],
                 columns=["Peringkat", "Pasien"] + FITUR + ["Jarak", "Kelas"]
             )
-            df_jarak["BMI"] = df_jarak["BMI"].apply(lambda val: f"{val:.1f}")
             
-            # Warna sorotan baris: Gold/Amber lembut
             warna_baris = lambda row: ["background-color: #fef3c7; font-weight: bold; color: #92400e;" if row["Peringkat"] <= k_val else "" for _ in row]
             df_jarak_styled = df_jarak.style.apply(warna_baris, axis=1)
-            st.dataframe(styling_tabel(df_jarak_styled), hide_index=True, use_container_width=True)
+            st.dataframe(format_dan_center(df_jarak_styled), hide_index=True, use_container_width=True)
             st.caption(f"Baris dengan latar belakang emas lembut adalah {k_val} tetangga terdekat.")
 
             st.markdown(f"**Langkah 4 - Voting K = {k_val} Tetangga Terdekat**")
@@ -258,10 +250,11 @@ with tab1:
 # ===== tab dataset =====
 with tab2:
     st.subheader("Dataset Latih Aktif")
-    df_latih = pd.DataFrame([r[:6] + [label(r[6])] for r in data],
-                            columns=["Pasien"] + FITUR + ["Kelas"])
-    df_latih["BMI"] = df_latih["BMI"].apply(lambda val: f"{val:.1f}")
-    st.dataframe(styling_tabel(df_latih.style), hide_index=True, use_container_width=True)
+    df_latih = pd.DataFrame(
+        [[r[0], int(r[1]), f"{r[2]:.1f}", int(r[3]), int(r[4]), int(r[5]), label(r[6])] for r in data],
+        columns=["Pasien"] + FITUR + ["Kelas"]
+    )
+    st.dataframe(format_dan_center(df_latih.style), hide_index=True, use_container_width=True)
 
     st.markdown("---")
     st.subheader("Tambah Data Latih Baru")
