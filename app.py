@@ -68,31 +68,6 @@ st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="🌸", lay
 st.markdown("""
 <style>
 .hero{background:linear-gradient(120deg,#e6407f,#ff8fb8);color:white;padding:26px;border-radius:20px;
-      text-align:center;margin-bottom:18px}
-.hero h1{margin:0;font-size:2rem;color:white}.hero p{margin:4px 0 0;color:white}
-.hasil{border-radius:18px;padding:22px;text-align:center;color:white;margin-top:8px}
-.hasil.t{background:linear-gradient(120deg,#d6264f,#ff6b8f)}
-.hasil.r{background:linear-gradient(120deg,#2e9b6a,#6fd3a3)}
-.hasil h2{color:white;margin:0 0 6px}
-.stButton>button,.stFormSubmitButton>button{border-radius:999px;font-weight:bold}
-/* Styling Tabel Nuansa Pink Soft */
-[data-testid="stDataFrame"] th {
-    background-color: #ffe4e1 !important;
-    color: #b03060 !important;
-    font-weight: bold !important;
-}
-[data-testid="stDataFrame"] td {
-    background-color: #fff9fb !important;
-    color: #333333 !important;
-}
-[data-testid="stDataFrame"] table {
-    border: 1px solid #ffb3d1 !important;
-    border-radius: 10px !important;
-}
-</style>
-st.markdown("""
-<style>
-.hero{background:linear-gradient(120deg,#e6407f,#ff8fb8);color:white;padding:26px;border-radius:20px;
      text-align:center;margin-bottom:18px}
 .hero h1{margin:0;font-size:2rem;color:white}.hero p{margin:4px 0 0;color:white}
 .hasil{border-radius:18px;padding:22px;text-align:center;color:white;margin-top:8px}
@@ -100,23 +75,7 @@ st.markdown("""
 .hasil.r{background:linear-gradient(120deg,#2e9b6a,#6fd3a3)}
 .hasil h2{color:white;margin:0 0 6px}
 .stButton>button,.stFormSubmitButton>button{border-radius:999px;font-weight:bold}
-
-/* === CSS KHUSUS TABEL PINK SOFT === */
-/* Header Tabel */
-div[data-testid="stDataFrame"] th {
-    background-color: #ffd1dc !important;
-    color: #8b0042 !important;
-    font-weight: bold !important;
-}
-/* Isi Sel Tabel */
-div[data-testid="stDataFrame"] td {
-    background-color: #fff0f3 !important;
-    color: #333333 !important;
-}
 </style>
-<div class="hero"><h1>🌸 Sistem Pendukung Keputusan Risiko Diabetes</h1>
-<p>Klasifikasi pasien dengan algoritma K-Nearest Neighbors (KNN)</p></div>
-""", unsafe_allow_html=True)
 <div class="hero"><h1>🌸 Sistem Pendukung Keputusan Risiko Diabetes</h1>
 <p>Klasifikasi pasien dengan algoritma K-Nearest Neighbors (KNN)</p></div>
 """, unsafe_allow_html=True)
