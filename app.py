@@ -77,8 +77,23 @@ st.markdown("""
 .hasil.t{background:linear-gradient(120deg,#d6264f,#ff6b8f)}
 .hasil.r{background:linear-gradient(120deg,#2e9b6a,#6fd3a3)}
 .hasil h2{color:white;margin:0 0 6px}
-.stButton>button,.stFormSubmitButton>button{border-radius:999px;font-weight:bold;background-color:#e6407f;color:white;}
-.stButton>button:hover,.stFormSubmitButton>button:hover{background-color:#d6264f;color:white;}
+
+/* --- PERBAIKAN TOMBOL AGAR TIDAK TEGANG, ESTETIK, DAN LEMBUT --- */
+.stButton>button, .stFormSubmitButton>button {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    background: linear-gradient(135deg, #ff6b97, #e6407f) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1.2rem !important;
+    box-shadow: 0 4px 10px rgba(230, 64, 127, 0.25) !important;
+    transition: all 0.3s ease !important;
+}
+.stButton>button:hover, .stFormSubmitButton>button:hover {
+    background: linear-gradient(135deg, #e6407f, #c7255f) !important;
+    box-shadow: 0 6px 14px rgba(230, 64, 127, 0.4) !important;
+    transform: translateY(-2px);
+}
 </style>
 <div class="hero"><h1>🌸 Sistem Pendukung Keputusan Risiko Diabetes</h1>
 <p>Klasifikasi pasien dengan algoritma K-Nearest Neighbors (KNN)</p></div>
@@ -97,12 +112,12 @@ with tab1:
     with st.form("form_pasien"):
         c1, c2, c3, c4 = st.columns(4)
         nama = c1.text_input("Nama Pasien", value="Pasien Baru" if contoh else "")
-        usia = c2.number_input("Usia (tahun)", min_value=1.0, step=1.0, value=42.0 if contoh else None)
-        bmi = c3.number_input("BMI", min_value=1.0, step=0.1, value=28.5 if contoh else None)
-        glu = c4.number_input("Glukosa (mg/dL)", min_value=1.0, step=1.0, value=130.0 if contoh else None)
+        usia = c2.number_input("Usia (tahun)", min_value=1.0, step=1.0, value=42.0 if contoh else None, format="%.1f")
+        bmi = c3.number_input("BMI", min_value=1.0, step=0.1, value=28.5 if contoh else None, format="%.1f")
+        glu = c4.number_input("Glukosa (mg/dL)", min_value=1.0, step=1.0, value=130.0 if contoh else None, format="%.1f")
         
         c5, c6, c7 = st.columns(3)
-        td = c5.number_input("Tekanan Darah (mmHg)", min_value=1.0, step=1.0, value=128.0 if contoh else None)
+        td = c5.number_input("Tekanan Darah (mmHg)", min_value=1.0, step=1.0, value=128.0 if contoh else None, format="%.1f")
         rk = c6.selectbox("Riwayat Diabetes Keluarga", ["0 - Tidak ada", "1 - Ada"],
                           index=1 if contoh else None, placeholder="Pilih")
         k = c7.number_input("Nilai K", min_value=1, max_value=len(data), step=1, value=min(3, len(data)))
@@ -171,11 +186,11 @@ with tab2:
     with st.form("form_tambah", clear_on_submit=True):
         a1, a2, a3, a4 = st.columns(4)
         n_id = a1.text_input("Kode Pasien")
-        n_usia = a2.number_input("Usia", min_value=1.0, step=1.0, value=None)
-        n_bmi = a3.number_input("BMI", min_value=1.0, step=0.1, value=None)
-        n_glu = a4.number_input("Glukosa", min_value=1.0, step=1.0, value=None)
+        n_usia = a2.number_input("Usia", min_value=1.0, step=1.0, value=None, format="%.1f")
+        n_bmi = a3.number_input("BMI", min_value=1.0, step=0.1, value=None, format="%.1f")
+        n_glu = a4.number_input("Glukosa", min_value=1.0, step=1.0, value=None, format="%.1f")
         b1, b2, b3 = st.columns(3)
-        n_td = b1.number_input("Tekanan Darah", min_value=1.0, step=1.0, value=None)
+        n_td = b1.number_input("Tekanan Darah", min_value=1.0, step=1.0, value=None, format="%.1f")
         n_rk = b2.selectbox("Riwayat Keluarga", ["0 - Tidak ada", "1 - Ada"])
         n_kls = b3.selectbox("Kelas", ["0 - Rendah", "1 - Tinggi"])
         tambah = st.form_submit_button("Tambah ke Dataset", type="primary")
