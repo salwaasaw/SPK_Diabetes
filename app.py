@@ -75,6 +75,20 @@ st.markdown("""
 .hasil.r{background:linear-gradient(120deg,#2e9b6a,#6fd3a3)}
 .hasil h2{color:white;margin:0 0 6px}
 .stButton>button,.stFormSubmitButton>button{border-radius:999px;font-weight:bold}
+/* Styling Tabel Nuansa Pink Soft */
+[data-testid="stDataFrame"] th {
+    background-color: #ffe4e1 !important;
+    color: #b03060 !important;
+    font-weight: bold !important;
+}
+[data-testid="stDataFrame"] td {
+    background-color: #fff9fb !important;
+    color: #333333 !important;
+}
+[data-testid="stDataFrame"] table {
+    border: 1px solid #ffb3d1 !important;
+    border-radius: 10px !important;
+}
 </style>
 <div class="hero"><h1>🌸 Sistem Pendukung Keputusan Risiko Diabetes</h1>
 <p>Klasifikasi pasien dengan algoritma K-Nearest Neighbors (KNN)</p></div>
