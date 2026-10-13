@@ -67,7 +67,6 @@ label = lambda c: "Tinggi" if c == 1 else "Rendah"
 st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="🌸", layout="wide")
 st.markdown("""
 <style>
-/* Background utama pink soft yang elegan dan bersih */
 .stApp {
     background-color: #fff5f8;
 }
@@ -98,22 +97,20 @@ with tab1:
     with st.form("form_pasien"):
         c1, c2, c3, c4 = st.columns(4)
         nama = c1.text_input("Nama Pasien", value="Pasien Baru" if contoh else "")
-        jk = c2.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"],
+        usia = c2.number_input("Usia (tahun)", min_value=1.0, step=1.0, value=42.0 if contoh else None)
+        bmi = c3.number_input("BMI", min_value=1.0, step=0.1, value=28.5 if contoh else None)
+        glu = c4.number_input("Glukosa (mg/dL)", min_value=1.0, step=1.0, value=130.0 if contoh else None)
+        
+        c5, c6, c7 = st.columns(3)
+        td = c5.number_input("Tekanan Darah (mmHg)", min_value=1.0, step=1.0, value=128.0 if contoh else None)
+        rk = c6.selectbox("Riwayat Diabetes Keluarga", ["0 - Tidak ada", "1 - Ada"],
                           index=1 if contoh else None, placeholder="Pilih")
-        usia = c3.number_input("Usia (tahun)", min_value=1.0, step=1.0, value=42.0 if contoh else None)
-        bmi = c4.number_input("BMI", min_value=1.0, step=0.1, value=28.5 if contoh else None)
-        c5, c6, c7, c8 = st.columns(4)
-        glu = c5.number_input("Glukosa (mg/dL)", min_value=1.0, step=1.0, value=130.0 if contoh else None)
-        td = c6.number_input("Tekanan Darah (mmHg)", min_value=1.0, step=1.0, value=128.0 if contoh else None)
-        rk = c7.selectbox("Riwayat Diabetes Keluarga", ["0 - Tidak ada", "1 - Ada"],
-                          index=1 if contoh else None, placeholder="Pilih")
-        k = c8.number_input("Nilai K", min_value=1, max_value=len(data), step=1, value=min(3, len(data)))
+        k = c7.number_input("Nilai K", min_value=1, max_value=len(data), step=1, value=min(3, len(data)))
         kirim = st.form_submit_button("Hitung KNN", type="primary")
 
     if kirim:
-        if not nama.strip() or jk is None or rk is None or None in (usia, bmi, glu, td):
-            st.error("Semua kolom wajib diisi: nama, jenis kelamin, usia, BMI, glukosa, "
-                     "tekanan darah, dan riwayat keluarga.")
+        if not nama.strip() or rk is None or None in (usia, bmi, glu, td):
+            st.error("Semua kolom wajib diisi: nama, usia, BMI, glukosa, tekanan darah, dan riwayat keluarga.")
         else:
             x = [usia, bmi, glu, td, int(rk[0])]
             h = hitung_knn(data, x, int(k))
@@ -121,9 +118,8 @@ with tab1:
 
             st.subheader("2. Proses Perhitungan")
             st.markdown("**Langkah 1 - Data pasien**")
-            st.dataframe(pd.DataFrame([[nama, jk] + x], columns=["Nama", "Jenis Kelamin"] + FITUR),
+            st.dataframe(pd.DataFrame([[nama] + x], columns=["Nama"] + FITUR),
                          hide_index=True, use_container_width=True)
-            st.caption("Jenis kelamin hanya identitas, tidak dihitung karena dataset latih tidak memiliki atribut itu.")
 
             st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
@@ -158,7 +154,7 @@ with tab1:
                 f"""<div class="hasil {'t' if t else 'r'}">
                 <h2>{'⚠️ RISIKO DIABETES TINGGI' if t else '✅ RISIKO DIABETES RENDAH'}</h2>
                 Berdasarkan {k} tetangga terdekat ({h['tinggi']} Tinggi, {h['rendah']} Rendah),
-                pasien <b>{nama}</b> ({jk}, {usia:g} tahun) diklasifikasikan sebagai
+                pasien <b>{nama}</b> ({usia:g} tahun) diklasifikasikan sebagai
                 <b>{'Risiko Tinggi (kelas 1)' if t else 'Risiko Rendah (kelas 0)'}</b>.<br>
                 {'Disarankan pemeriksaan lanjutan dan konsultasi dokter.' if t else
                  'Pertahankan pola hidup sehat dan lakukan pemeriksaan berkala.'}</div>""",
