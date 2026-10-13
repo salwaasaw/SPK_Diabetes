@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Sunset Gold & Charcoal (Final Fixed & Clean Formatting)
+Tema: Sunset Gold & Charcoal (Final Clean & Perfect Formatting)
 Jalankan:  python -m streamlit run app.py
 """
 import json
@@ -218,7 +218,7 @@ with tab1:
                     "Min": mn_str,
                     "Max": mx_str,
                     "Nilai Pasien": p_str,
-                    "Hasil Normalisasi": f"{h['xn'][idx]:.5f}"
+                    "Hasil Normalisasi": f"{h['xn'][idx]:.4f}"
                 })
             
             df_norm = pd.DataFrame(norm_data)
@@ -231,7 +231,7 @@ with tab1:
             st.caption(f"Contoh Perhitungan Jarak {r0['id']}: d = √({suku}) = {r0['d']:.4f}")
             
             df_jarak = pd.DataFrame(
-                [[i + 1, r["id"], int(r["f"][0]), f"{r['f'][1]:.1f}", int(r["f"][2]), int(r["f"][3]), int(r["f"][4]), round(r["d"], 4), label(r["kelas"])]
+                [[i + 1, r["id"], int(r["f"][0]), f"{r['f'][1]:.1f}", int(r["f"][2]), int(r["f"][3]), int(r["f"][4]), f"{r['d']:.4f}", label(r["kelas"])]
                  for i, r in enumerate(h["rows"])],
                 columns=["Peringkat", "Pasien"] + FITUR + ["Jarak", "Kelas"]
             )
