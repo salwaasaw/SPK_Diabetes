@@ -316,8 +316,8 @@ with tab2:
             st.success("🗑️ Data yang dipilih berhasil dihapus.")
             st.rerun()
             
-    if d2.button("Reset ke Dataset Awal Modul"):
+    if d2.button("Reset ke Dataset Awal"):
         st.session_state.data = [r[:] for r in DEFAULT]
         simpan_data(st.session_state.data)
-        st.success("🔄 Dataset berhasil dikembalikan ke pengaturan awal modul.")
+        st.success("🔄 Dataset berhasil dikembalikan ke pengaturan awal.")
         st.rerun()
