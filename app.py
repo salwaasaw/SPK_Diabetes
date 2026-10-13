@@ -67,17 +67,10 @@ label = lambda c: "Tinggi" if c == 1 else "Rendah"
 st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="🌸", layout="wide")
 st.markdown("""
 <style>
-/* Mengubah warna latar belakang aplikasi jadi pink soft */
+/* Background utama pink soft yang elegan dan bersih */
 .stApp {
-    background-color: #fff0f5;
+    background-color: #fff5f8;
 }
-
-/* Mengubah kotak input, selectbox, dan number input jadi pink pastel */
-div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
-    background-color: #ffe4e8 !important;
-    border-color: #ffb6c1 !important;
-}
-
 .hero{background:linear-gradient(120deg,#e6407f,#ff8fb8);color:white;padding:26px;border-radius:20px;
      text-align:center;margin-bottom:18px}
 .hero h1{margin:0;font-size:2rem;color:white}.hero p{margin:4px 0 0;color:white}
@@ -85,7 +78,8 @@ div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
 .hasil.t{background:linear-gradient(120deg,#d6264f,#ff6b8f)}
 .hasil.r{background:linear-gradient(120deg,#2e9b6a,#6fd3a3)}
 .hasil h2{color:white;margin:0 0 6px}
-.stButton>button,.stFormSubmitButton>button{border-radius:999px;font-weight:bold}
+.stButton>button,.stFormSubmitButton>button{border-radius:999px;font-weight:bold;background-color:#e6407f;color:white;}
+.stButton>button:hover,.stFormSubmitButton>button:hover{background-color:#d6264f;color:white;}
 </style>
 <div class="hero"><h1>🌸 Sistem Pendukung Keputusan Risiko Diabetes</h1>
 <p>Klasifikasi pasien dengan algoritma K-Nearest Neighbors (KNN)</p></div>
