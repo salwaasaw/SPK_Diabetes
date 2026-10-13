@@ -133,8 +133,9 @@ with tab1:
 
             st.subheader("2. Proses Perhitungan")
             st.markdown("**Langkah 1 - Data pasien**")
-            st.dataframe(pd.DataFrame([[nama] + x], columns=["Nama"] + FITUR),
-                         hide_index=True, use_container_width=True)
+            df_pasien = pd.DataFrame([[nama] + x], columns=["Nama"] + FITUR)
+            df_pasien["BMI"] = df_pasien["BMI"].apply(lambda val: f"{val:.1f}")
+            st.dataframe(df_pasien, hide_index=True, use_container_width=True)
 
             st.markdown("**Langkah 2 - Normalisasi Min-Max**")
             st.latex(r"x' = \frac{x - \min}{\max - \min}")
@@ -147,12 +148,15 @@ with tab1:
             r0 = h["rows"][0]
             suku = " + ".join(f"({a:.3f}-{b:.3f})^2" for a, b in zip(h["xn"], r0["fn"]))
             st.caption(f"Contoh {r0['id']}: d = akar({suku}) = {r0['d']:.4f}")
-            df = pd.DataFrame([[i + 1, r["id"]] + r["f"] + [round(r["d"], 4), label(r["kelas"])]
-                               for i, r in enumerate(h["rows"])],
-                              columns=["Peringkat", "Pasien"] + FITUR + ["Jarak", "Kelas"])
+            
+            df_jarak = pd.DataFrame([[i + 1, r["id"]] + r["f"] + [round(r["d"], 4), label(r["kelas"])]
+                                     for i, r in enumerate(h["rows"])],
+                                    columns=["Peringkat", "Pasien"] + FITUR + ["Jarak", "Kelas"])
+            df_jarak["BMI"] = df_jarak["BMI"].apply(lambda val: f"{val:.1f}")
+            
             warna = lambda row: ["background-color:#ffb3d1;font-weight:bold" if row["Peringkat"] <= k else ""
                                  for _ in row]
-            st.dataframe(df.style.apply(warna, axis=1), hide_index=True, use_container_width=True)
+            st.dataframe(df_jarak.style.apply(warna, axis=1), hide_index=True, use_container_width=True)
             st.caption(f"Baris berwarna adalah {k} tetangga terdekat.")
 
             st.markdown(f"**Langkah 4 - Voting K = {k} tetangga terdekat**")
@@ -178,9 +182,10 @@ with tab1:
 # ===== tab dataset =====
 with tab2:
     st.subheader("Dataset Latih")
-    st.dataframe(pd.DataFrame([r[:6] + [label(r[6])] for r in data],
-                              columns=["Pasien"] + FITUR + ["Kelas"]),
-                 hide_index=True, use_container_width=True)
+    df_latih = pd.DataFrame([r[:6] + [label(r[6])] for r in data],
+                            columns=["Pasien"] + FITUR + ["Kelas"])
+    df_latih["BMI"] = df_latih["BMI"].apply(lambda val: f"{val:.1f}")
+    st.dataframe(df_latih, hide_index=True, use_container_width=True)
 
     st.subheader("Tambah Data Baru ke Dataset")
     with st.form("form_tambah", clear_on_submit=True):
