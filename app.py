@@ -71,6 +71,13 @@ st.markdown("""
 .stApp {
     background-color: #fff0f5;
 }
+
+/* Mengubah kotak input, selectbox, dan number input jadi pink pastel */
+div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
+    background-color: #ffe4e8 !important;
+    border-color: #ffb6c1 !important;
+}
+
 .hero{background:linear-gradient(120deg,#e6407f,#ff8fb8);color:white;padding:26px;border-radius:20px;
      text-align:center;margin-bottom:18px}
 .hero h1{margin:0;font-size:2rem;color:white}.hero p{margin:4px 0 0;color:white}
