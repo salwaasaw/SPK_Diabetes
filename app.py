@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Deep Navy Blue & Slate (Tanpa Merah)
+Tema: Deep Navy Blue & Slate (Tanpa Merah, Tampilan Profesional)
 Jalankan: python -m streamlit run app.py
 """
 import json
@@ -98,7 +98,6 @@ st.markdown("""
     margin-top: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
-/* Mengubah warna latar kotak hasil agar seragam biru netral tanpa warna merah */
 .hasil.t { background: linear-gradient(135deg, #1e3a8a, #1e1b4b); }
 .hasil.r { background: linear-gradient(135deg, #0f172a, #1e293b); }
 .hasil h2 { color: white; margin: 0 0 8px; font-size: 1.5rem; }
@@ -157,7 +156,7 @@ if "data" not in st.session_state:
     st.session_state.data = muat_data()
 data = st.session_state.data
 
-tab1, tab2, tab3 = st.tabs(["🔍 Prediksi Pasien", "📋 Dataset", "🎯 Simulasi & Pengujian K"])
+tab1, tab2, tab3 = st.tabs(["🔍 Prediksi Pasien", "📋 Dataset", "📊 Visualisasi & Analisis Data"])
 
 # ===== tab prediksi =====
 with tab1:
@@ -323,38 +322,46 @@ with tab2:
         st.success("🔄 Dataset berhasil dikembalikan ke pengaturan awal modul.")
         st.rerun()
 
-# ===== tab simulasi & pengujian k interaktif =====
+# ===== tab visualisasi & analisis data =====
 with tab3:
-    st.subheader("🎯 Simulasi Interaktif Pengaruh Nilai K")
-    st.caption("Uji coba langsung bagaimana perubahan nilai K mempengaruhi hasil tetangga terdekat dari sebuah sampel uji.")
+    st.subheader("📊 Visualisasi & Analisis Persebaran Dataset")
+    st.caption("Menampilkan ringkasan statistik dan grafik sebaran data klinis pasien latih.")
 
-    sim_k = st.slider("Geser Nilai K untuk Melihat Perubahan Tetangga Terdekat", min_value=1, max_value=min(7, len(data)), value=min(3, len(data)))
-    
-    sampel_uji = [40, 27.5, 120, 125, 1]
-    res_sim = hitung_knn(data, sampel_uji, sim_k)
+    # Hitung statistik ringkas
+    total_pasien = len(data)
+    total_tinggi = sum(1 for r in data if r[6] == 1)
+    total_rendah = total_pasien - total_tinggi
 
-    st.markdown(f"**Hasil Analisis untuk Sampel Uji (Usia: 40, BMI: 27.5, Glukosa: 120, TD: 125, Riwayat: 1) dengan K = {sim_k}:**")
-
-    c_s1, c_s2 = st.columns(2)
-    c_s1.metric("Jumlah Suara Risiko Tinggi", f"{res_sim['tinggi']} Tetangga")
-    c_s2.metric("Jumlah Suara Risiko Rendah", f"{res_sim['rendah']} Tetangga")
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("**Diagram Batang Perbandingan Suara Voting:**")
-    df_chart = pd.DataFrame({
-        'Kategori Risiko': ['Risiko Tinggi', 'Risiko Rendah'],
-        'Jumlah Suara': [res_sim['tinggi'], res_sim['rendah']]
-    })
-    st.bar_chart(df_chart.set_index('Kategori Risiko'))
+    c_v1, c_v2, c_v3 = st.columns(3)
+    c_v1.metric("Total Data Latih", f"{total_pasien} Pasien")
+    c_v2.metric("Risiko Tinggi", f"{total_tinggi} Pasien")
+    c_v3.metric("Risiko Rendah", f"{total_rendah} Pasien")
 
     st.markdown("---")
-    st.markdown(f"**Daftar {sim_k} Tetangga Terdekat (Berubah Dinamis Sesuai Nilai K):**")
-    
-    df_sim_nb = pd.DataFrame(
-        [[i + 1, r["id"], int(r["f"][0]), f"{r['f'][1]:.1f}", int(r["f"][2]), int(r["f"][3]), int(r["f"][4]), f"{r['d']:.4f}", label(r["kelas"])]
-         for i, r in enumerate(res_sim["nb"])],
-        columns=["Urutan", "Pasien"] + FITUR + ["Jarak Euclidean", "Kelas"]
-    )
-    st.dataframe(format_dan_center(df_sim_nb.style), hide_index=True, use_container_width=True)
+    st.subheader("Grafik Sebaran (Scatter Plot): Glukosa vs BMI")
+    st.caption("Grafik interaktif untuk melihat sebaran nilai Glukosa dan BMI seluruh pasien dalam dataset.")
 
-    st.info(f"💡 Coba geser slider **Nilai K** di atas ke angka lain. Perhatikan bagaimana jumlah tetangga di tabel dan grafik batang otomatis berubah secara *real-time*!")
+    # Siapkan data untuk scatter chart
+    df_chart_src = pd.DataFrame(
+        [[r[1], r[2], r[3], label(r[6])] for r in data],
+        columns=["Usia", "BMI", "Glukosa", "Kelas"]
+    )
+    
+    # Gunakan scatter_chart bawaan streamit yang bersih dan rapi
+    st.scatter_chart(df_chart_src, x="BMI", y="Glukosa", color="Kelas")
+
+    st.markdown("---")
+    st.subheader("📋 Ringkasan Rata-Rata Fitur Berdasarkan Kelas Risiko")
+    
+    # Hitung rata-rata per kelas
+    df_analisis = pd.DataFrame(data, columns=["ID", "Usia", "BMI", "Glukosa", "Tekanan Darah", "Riwayat", "Kelas"])
+    df_analisis["Kelas"] = df_analisis["Kelas"].apply(label)
+    
+    df_mean = df_analisis.groupby("Kelas")[["Usia", "BMI", "Glukosa", "Tekanan Darah"]].mean().reset_index()
+    df_mean["Usia"] = df_mean["Usia"].round(1)
+    df_mean["BMI"] = df_mean["BMI"].round(1)
+    df_mean["Glukosa"] = df_mean["Glukosa"].round(1)
+    df_mean["Tekanan Darah"] = df_mean["Tekanan Darah"].round(1)
+    
+    st.dataframe(format_dan_center(df_mean.style), hide_index=True, use_container_width=True)
+    st.info("💡 Tabel di atas merangkum karakteristik rata-rata klinis pasien antara kategori Risiko Tinggi dan Risiko Rendah.")
