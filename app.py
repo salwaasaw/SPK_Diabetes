@@ -1,8 +1,7 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Deep Navy Blue & Slate (Netral & Profesional)
-Dilengkapi: Tab Evaluasi Model (Confusion Matrix, Akurasi, LOOCV, Optimasi K)
-Jalankan:  python -m streamlit run app.py
+Tema: Deep Navy Blue & Slate (Tanpa Merah)
+Jalankan: python -m streamlit run app.py
 """
 import json
 import math
@@ -40,19 +39,16 @@ def simpan_data(data):
 
 
 # ---------- algoritma KNN ----------
-def hitung_knn(data, x, k, exclude_id=None):
-    # Filter data jika digunakan untuk pengujian LOOCV
-    data_latih = [r for r in data if r[0] != exclude_id] if exclude_id else data
-    
-    mn = [min(r[j + 1] for r in data_latih) for j in range(5)]
-    mx = [max(r[j + 1] for r in data_latih) for j in range(5)]
+def hitung_knn(data, x, k):
+    mn = [min(r[j + 1] for r in data) for j in range(5)]
+    mx = [max(r[j + 1] for r in data) for j in range(5)]
 
     def norm(v, j):
         return 0.0 if mx[j] == mn[j] else (v - mn[j]) / (mx[j] - mn[j])
 
     xn = [norm(v, j) for j, v in enumerate(x)]
     rows = []
-    for r in data_latih:
+    for r in data:
         fitur = r[1:6]
         fn = [norm(v, j) for j, v in enumerate(fitur)]
         d = math.sqrt(sum((a - b) ** 2 for a, b in zip(fn, xn)))
@@ -64,41 +60,6 @@ def hitung_knn(data, x, k, exclude_id=None):
     hasil = nb[0]["kelas"] if tinggi == rendah else (1 if tinggi > rendah else 0)
     return {"mn": mn, "mx": mx, "xn": xn, "rows": rows, "nb": nb,
             "tinggi": tinggi, "rendah": rendah, "hasil": hasil}
-
-
-# ---------- fungsi evaluasi LOOCV ----------
-def evaluasi_loocv(data, k):
-    tp = tn = fp = fn = 0
-    detail = []
-    for r in data:
-        pid = r[0]
-        x_test = r[1:6]
-        y_true = r[6]
-        res = hitung_knn(data, x_test, k, exclude_id=pid)
-        y_pred = res["hasil"]
-        
-        if y_true == 1 and y_pred == 1:
-            tp += 1
-            status = "True Positive (TP)"
-        elif y_true == 0 and y_pred == 0:
-            tn += 1
-            status = "True Negative (TN)"
-        elif y_true == 0 and y_pred == 1:
-            fp += 1
-            status = "False Positive (FP)"
-        else:
-            fn += 1
-            status = "False Negative (FN)"
-            
-        detail.append({"Pasien": pid, "Kelas Aktual": label(y_true), "Prediksi Model": label(y_pred), "Evaluasi": status})
-        
-    total = len(data)
-    akurasi = (tp + tn) / total if total > 0 else 0
-    sensitivitas = tp / (tp + fn) if (tp + fn) > 0 else 0
-    spesifisitas = tn / (tn + fp) if (tn + fp) > 0 else 0
-    
-    return {"tp": tp, "tn": tn, "fp": fp, "fn": fn, "total": total,
-            "akurasi": akurasi, "sensitivitas": sensitivitas, "spesifisitas": spesifisitas, "detail": detail}
 
 
 label = lambda c: "Tinggi" if c == 1 else "Rendah"
@@ -137,8 +98,9 @@ st.markdown("""
     margin-top: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
-.hasil.t { background: linear-gradient(135deg, #991b1b, #7f1d1d); }
-.hasil.r { background: linear-gradient(135deg, #1e3a8a, #172554); }
+/* Mengubah warna latar kotak hasil agar seragam biru netral tanpa warna merah */
+.hasil.t { background: linear-gradient(135deg, #1e3a8a, #1e1b4b); }
+.hasil.r { background: linear-gradient(135deg, #0f172a, #1e293b); }
 .hasil h2 { color: white; margin: 0 0 8px; font-size: 1.5rem; }
 
 .stButton>button, .stFormSubmitButton>button {
@@ -195,7 +157,7 @@ if "data" not in st.session_state:
     st.session_state.data = muat_data()
 data = st.session_state.data
 
-tab1, tab2, tab3 = st.tabs(["🔍 Prediksi Pasien", "📋 Dataset", "📊 Evaluasi & Optimasi Model"])
+tab1, tab2, tab3 = st.tabs(["🔍 Prediksi Pasien", "📋 Dataset", "🎯 Simulasi & Pengujian K"])
 
 # ===== tab prediksi =====
 with tab1:
@@ -361,49 +323,38 @@ with tab2:
         st.success("🔄 Dataset berhasil dikembalikan ke pengaturan awal modul.")
         st.rerun()
 
-# ===== tab evaluasi model =====
+# ===== tab simulasi & pengujian k interaktif =====
 with tab3:
-    st.subheader("📊 Evaluasi Kinerja Model (Leave-One-Out Cross Validation)")
-    st.caption("Pengujian independen menggunakan metode LOOCV untuk menguji keakuratan prediksi model pada setiap data pasien.")
+    st.subheader("🎯 Simulasi Interaktif Pengaruh Nilai K")
+    st.caption("Uji coba langsung bagaimana perubahan nilai K mempengaruhi hasil tetangga terdekat dari sebuah sampel uji.")
 
-    eval_k = st.slider("Pilih Nilai K untuk Pengujian Evaluasi", min_value=1, max_value=max(1, len(data) - 1), value=min(3, len(data) - 1))
+    sim_k = st.slider("Geser Nilai K untuk Melihat Perubahan Tetangga Terdekat", min_value=1, max_value=min(7, len(data)), value=min(3, len(data)))
     
-    res_eval = evaluasi_loocv(data, eval_k)
-    
-    col_e1, col_e2, col_e3 = st.columns(3)
-    col_e1.metric("Akurasi Model", f"{res_eval['akurasi'] * 100:.1f}%")
-    col_e2.metric("Sensitivitas (Recall)", f"{res_eval['sensitivitas'] * 100:.1f}%")
-    col_e3.metric("Spesifisitas", f"{res_eval['spesifisitas'] * 100:.1f}%")
+    sampel_uji = [40, 27.5, 120, 125, 1]
+    res_sim = hitung_knn(data, sampel_uji, sim_k)
+
+    st.markdown(f"**Hasil Analisis untuk Sampel Uji (Usia: 40, BMI: 27.5, Glukosa: 120, TD: 125, Riwayat: 1) dengan K = {sim_k}:**")
+
+    c_s1, c_s2 = st.columns(2)
+    c_s1.metric("Jumlah Suara Risiko Tinggi", f"{res_sim['tinggi']} Tetangga")
+    c_s2.metric("Jumlah Suara Risiko Rendah", f"{res_sim['rendah']} Tetangga")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("**Diagram Batang Perbandingan Suara Voting:**")
+    df_chart = pd.DataFrame({
+        'Kategori Risiko': ['Risiko Tinggi', 'Risiko Rendah'],
+        'Jumlah Suara': [res_sim['tinggi'], res_sim['rendah']]
+    })
+    st.bar_chart(df_chart.set_index('Kategori Risiko'))
 
     st.markdown("---")
-    st.subheader("Confusion Matrix")
+    st.markdown(f"**Daftar {sim_k} Tetangga Terdekat (Berubah Dinamis Sesuai Nilai K):**")
     
-    # Tabel Confusion Matrix Custom
-    cm_df = pd.DataFrame(
-        [
-            [f"True Positive (TP): {res_eval['tp']}", f"False Negative (FN): {res_eval['fn']}"],
-            [f"False Positive (FP): {res_eval['fp']}", f"True Negative (TN): {res_eval['tn']}"]
-        ],
-        index=["Aktual Tinggi (1)", "Aktual Rendah (0)"],
-        columns=["Prediksi Tinggi (1)", "Prediksi Rendah (0)"]
+    df_sim_nb = pd.DataFrame(
+        [[i + 1, r["id"], int(r["f"][0]), f"{r['f'][1]:.1f}", int(r["f"][2]), int(r["f"][3]), int(r["f"][4]), f"{r['d']:.4f}", label(r["kelas"])]
+         for i, r in enumerate(res_sim["nb"])],
+        columns=["Urutan", "Pasien"] + FITUR + ["Jarak Euclidean", "Kelas"]
     )
-    st.table(cm_df)
+    st.dataframe(format_dan_center(df_sim_nb.style), hide_index=True, use_container_width=True)
 
-    st.markdown("---")
-    st.subheader("Analisis Optimasi Nilai K Terbaik")
-    
-    opt_data = []
-    max_k_check = min(9, len(data) - 1)
-    for k_test in range(1, max_k_check + 1):
-        ev = evaluasi_loocv(data, k_test)
-        opt_data.append({"Nilai K": k_test, "Akurasi (%)": round(ev["akurasi"] * 100, 1)})
-    
-    df_opt = pd.DataFrame(opt_data)
-    st.bar_chart(df_opt.set_index("Nilai K"))
-    
-    best_k = max(opt_data, key=lambda x: x["Akurasi (%)"])
-    st.success(f"💡 **Rekomendasi Optimal:** Nilai **K = {best_k['Nilai K']}** menghasilkan tingkat akurasi tertinggi yaitu **{best_k['Akurasi (%)']}%** pada dataset ini.")
-
-    st.markdown("---")
-    st.subheader("Detail Evaluasi Tiap Pasien")
-    st.dataframe(format_dan_center(pd.DataFrame(res_eval["detail"]).style), hide_index=True, use_container_width=True)
+    st.info(f"💡 Coba geser slider **Nilai K** di atas ke angka lain. Perhatikan bagaimana jumlah tetangga di tabel dan grafik batang otomatis berubah secara *real-time*!")
