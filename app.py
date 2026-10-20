@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Sunset Gold & Charcoal (Final Uniform Formatting)
+Tema: Deep Navy Blue & Slate (Netral & Profesional)
 Jalankan:  python -m streamlit run app.py
 """
 import json
@@ -70,25 +70,25 @@ def format_dan_center(df_styler):
     return df_styler.set_properties(**{'text-align': 'center'})
 
 
-# ---------- tampilan (Sunset Gold & Charcoal) ----------
-st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="✨", layout="wide")
+# ---------- tampilan (Deep Navy Blue & Slate) ----------
+st.set_page_config(page_title="SPK Risiko Diabetes - KNN", page_icon="🌐", layout="wide")
 st.markdown("""
 <style>
 .stApp {
-    background-color: #fafaf9;
-    color: #292524;
+    background-color: #f8fafc;
+    color: #1e293b;
 }
 .hero {
-    background: linear-gradient(135deg, #d97706, #b45309);
+    background: linear-gradient(135deg, #1e3a8a, #0f172a);
     color: white;
     padding: 30px 20px;
     border-radius: 16px;
     text-align: center;
     margin-bottom: 24px;
-    box-shadow: 0 10px 25px rgba(217, 119, 6, 0.2);
+    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.25);
 }
 .hero h1 { margin: 0; font-size: 2.2rem; color: white; font-weight: 700; }
-.hero p { margin: 8px 0 0; color: #fef3c7; font-size: 1.05rem; }
+.hero p { margin: 8px 0 0; color: #93c5fd; font-size: 1.05rem; }
 
 .hasil {
     border-radius: 14px;
@@ -96,26 +96,26 @@ st.markdown("""
     text-align: center;
     color: white;
     margin-top: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
-.hasil.t { background: linear-gradient(135deg, #b45309, #92400e); }
-.hasil.r { background: linear-gradient(135deg, #374151, #1f2937); }
+.hasil.t { background: linear-gradient(135deg, #991b1b, #7f1d1d); }
+.hasil.r { background: linear-gradient(135deg, #1e3a8a, #172554); }
 .hasil h2 { color: white; margin: 0 0 8px; font-size: 1.5rem; }
 
 .stButton>button, .stFormSubmitButton>button {
     border-radius: 10px !important;
     font-weight: 600 !important;
-    background: linear-gradient(135deg, #d97706, #b45309) !important;
+    background: linear-gradient(135deg, #1e40af, #1e3a8a) !important;
     color: white !important;
     border: none !important;
     padding: 0.6rem 1.4rem !important;
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25) !important;
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3) !important;
     transition: all 0.3s ease !important;
     width: 100%;
 }
 .stButton>button:hover, .stFormSubmitButton>button:hover {
-    background: linear-gradient(135deg, #b45309, #78350f) !important;
-    box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
+    background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+    box-shadow: 0 6px 16px rgba(30, 64, 175, 0.45) !important;
     transform: translateY(-2px);
 }
 
@@ -129,8 +129,8 @@ div[data-testid="stDataFrame"] table {
 }
 div[data-testid="stDataFrame"] th {
     text-align: center !important;
-    background-color: #fef3c7 !important;
-    color: #92400e !important;
+    background-color: #dbeafe !important;
+    color: #1e3a8a !important;
 }
 div[data-testid="stDataFrame"] th div {
     justify-content: center !important;
@@ -141,13 +141,13 @@ div[data-testid="stDataFrame"] td {
 }
 
 h2, h3 {
-    color: #92400e;
+    color: #1e3a8a;
     font-weight: 600;
 }
 </style>
 
 <div class="hero">
-    <h1>✨ Sistem Pendukung Keputusan Risiko Diabetes</h1>
+    <h1>🌐 Sistem Pendukung Keputusan Risiko Diabetes</h1>
     <p>Analisis Klinis Berbasis Algoritme K-Nearest Neighbors (KNN)</p>
 </div>
 """, unsafe_allow_html=True)
@@ -236,10 +236,10 @@ with tab1:
                 columns=["Peringkat", "Pasien"] + FITUR + ["Jarak", "Kelas"]
             )
             
-            warna_baris = lambda row: ["background-color: #fef3c7; font-weight: bold; color: #92400e;" if row["Peringkat"] <= k_val else "" for _ in row]
+            warna_baris = lambda row: ["background-color: #dbeafe; font-weight: bold; color: #1e3a8a;" if row["Peringkat"] <= k_val else "" for _ in row]
             df_jarak_styled = df_jarak.style.apply(warna_baris, axis=1)
             st.dataframe(format_dan_center(df_jarak_styled), hide_index=True, use_container_width=True)
-            st.caption(f"Baris dengan latar belakang emas lembut adalah {k_val} tetangga terdekat.")
+            st.caption(f"Baris dengan latar belakang biru muda adalah {k_val} tetangga terdekat.")
 
             st.markdown(f"**Langkah 4 - Voting K = {k_val} Tetangga Terdekat**")
             st.write("Tetangga Terpilih: " + ", ".join(f"<b>{r['id']}</b> ({label(r['kelas'])})" for r in h["nb"]), unsafe_allow_html=True)
