@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Deep Navy Blue & Slate (Grafik Garis / Line Chart)
+Tema: Deep Navy Blue & Slate (Grafik Garis dengan Titik / Plotly Markers)
 Jalankan: python -m streamlit run app.py
 """
 import json
@@ -8,6 +8,7 @@ import math
 import os
 
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 
 FILE_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dataset_diabetes.json")
@@ -325,7 +326,7 @@ with tab2:
 # ===== tab visualisasi & analisis data =====
 with tab3:
     st.subheader("📊 Visualisasi & Analisis Persebaran Dataset")
-    st.caption("Menampilkan ringkasan statistik dan grafik tren data klinis pasien latih.")
+    st.caption("Menampilkan ringkasan statistik dan grafik tren data klinis pasien latih dengan titik penanda (markers).")
 
     total_pasien = len(data)
     total_tinggi = sum(1 for r in data if r[6] == 1)
@@ -337,19 +338,30 @@ with tab3:
     c_v3.metric("Risiko Rendah", f"{total_rendah} Pasien")
 
     st.markdown("---")
-    st.subheader("Grafik Tren (Line Chart): Glukosa Berdasarkan Urutan Pasien")
-    st.caption("Grafik garis yang menghubungkan nilai kadar glukosa antar pasien dalam dataset.")
+    st.subheader("Grafik Tren Kadar Glukosa (Dilengkapi Titik & Garis)")
+    st.caption("Grafik interaktif menggunakan Plotly yang menampilkan garis tren beserta titik bulat pada tiap data pasien.")
 
-    # Siapkan data untuk line chart yang menghubungkan titik-titik dengan garis
-    df_line_src = pd.DataFrame(
+    # Siapkan dataframe untuk Plotly
+    df_plotly = pd.DataFrame(
         [[r[0], r[3], label(r[6])] for r in data],
         columns=["Pasien", "Glukosa", "Kelas"]
     )
-    # Ubah format agar sumbu X adalah Pasien dan nilainya berupa Glukosa
-    df_line_pivot = df_line_src.pivot(index="Pasien", columns="Kelas", values="Glukosa")
     
-    # Gunakan line_chart agar titik-titiknya terhubung oleh garis
-    st.line_chart(df_line_pivot)
+    # Buat line chart interaktif dengan titik bulat (markers=True)
+    fig = px.line(
+        df_plotly, 
+        x="Pasien", 
+        y="Glukosa", 
+        color="Kelas", 
+        markers=True,
+        labels={"Glukosa": "Kadar Glukosa (mg/dL)", "Pasien": "Kode Pasien"}
+    )
+    fig.update_layout(
+        plot_bgcolor="#f8fafc",
+        paper_bgcolor="#f8fafc",
+        font=dict(color="#1e293b")
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
     st.subheader("📋 Ringkasan Rata-Rata Fitur Berdasarkan Kelas Risiko")
