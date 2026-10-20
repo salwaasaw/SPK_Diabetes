@@ -1,6 +1,6 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Deep Navy Blue & Slate (Tanpa Merah, Tampilan Profesional)
+Tema: Deep Navy Blue & Slate (Grafik Garis / Line Chart)
 Jalankan: python -m streamlit run app.py
 """
 import json
@@ -325,9 +325,8 @@ with tab2:
 # ===== tab visualisasi & analisis data =====
 with tab3:
     st.subheader("📊 Visualisasi & Analisis Persebaran Dataset")
-    st.caption("Menampilkan ringkasan statistik dan grafik sebaran data klinis pasien latih.")
+    st.caption("Menampilkan ringkasan statistik dan grafik tren data klinis pasien latih.")
 
-    # Hitung statistik ringkas
     total_pasien = len(data)
     total_tinggi = sum(1 for r in data if r[6] == 1)
     total_rendah = total_pasien - total_tinggi
@@ -338,30 +337,32 @@ with tab3:
     c_v3.metric("Risiko Rendah", f"{total_rendah} Pasien")
 
     st.markdown("---")
-    st.subheader("Grafik Sebaran (Scatter Plot): Glukosa vs BMI")
-    st.caption("Grafik interaktif untuk melihat sebaran nilai Glukosa dan BMI seluruh pasien dalam dataset.")
+    st.subheader("Grafik Tren (Line Chart): Glukosa Berdasarkan Urutan Pasien")
+    st.caption("Grafik garis yang menghubungkan nilai kadar glukosa antar pasien dalam dataset.")
 
-    # Siapkan data untuk scatter chart
-    df_chart_src = pd.DataFrame(
-        [[r[1], r[2], r[3], label(r[6])] for r in data],
-        columns=["Usia", "BMI", "Glukosa", "Kelas"]
+    # Siapkan data untuk line chart yang menghubungkan titik-titik dengan garis
+    df_line_src = pd.DataFrame(
+        [[r[0], r[3], label(r[6])] for r in data],
+        columns=["Pasien", "Glukosa", "Kelas"]
     )
+    # Ubah format agar sumbu X adalah Pasien dan nilainya berupa Glukosa
+    df_line_pivot = df_line_src.pivot(index="Pasien", columns="Kelas", values="Glukosa")
     
-    # Gunakan scatter_chart bawaan streamit yang bersih dan rapi
-    st.scatter_chart(df_chart_src, x="BMI", y="Glukosa", color="Kelas")
+    # Gunakan line_chart agar titik-titiknya terhubung oleh garis
+    st.line_chart(df_line_pivot)
 
     st.markdown("---")
     st.subheader("📋 Ringkasan Rata-Rata Fitur Berdasarkan Kelas Risiko")
     
-    # Hitung rata-rata per kelas
     df_analisis = pd.DataFrame(data, columns=["ID", "Usia", "BMI", "Glukosa", "Tekanan Darah", "Riwayat", "Kelas"])
     df_analisis["Kelas"] = df_analisis["Kelas"].apply(label)
     
     df_mean = df_analisis.groupby("Kelas")[["Usia", "BMI", "Glukosa", "Tekanan Darah"]].mean().reset_index()
-    df_mean["Usia"] = df_mean["Usia"].round(1)
-    df_mean["BMI"] = df_mean["BMI"].round(1)
-    df_mean["Glukosa"] = df_mean["Glukosa"].round(1)
-    df_mean["Tekanan Darah"] = df_mean["Tekanan Darah"].round(1)
+    
+    df_mean["Usia"] = df_mean["Usia"].map("{:.1f}".format)
+    df_mean["BMI"] = df_mean["BMI"].map("{:.1f}".format)
+    df_mean["Glukosa"] = df_mean["Glukosa"].map("{:.1f}".format)
+    df_mean["Tekanan Darah"] = df_mean["Tekanan Darah"].map("{:.1f}".format)
     
     st.dataframe(format_dan_center(df_mean.style), hide_index=True, use_container_width=True)
     st.info("💡 Tabel di atas merangkum karakteristik rata-rata klinis pasien antara kategori Risiko Tinggi dan Risiko Rendah.")
