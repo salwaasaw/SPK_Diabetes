@@ -1,13 +1,12 @@
 """
 SPK Risiko Diabetes - K-Nearest Neighbors (Streamlit)
-Tema: Deep Navy Blue & Slate (Grafik Matplotlib Titik Bulat & Garis)
+Tema: Deep Navy Blue & Slate (Murni Bawaan Streamlit - Tanpa Module Tambahan)
 Jalankan: python -m streamlit run app.py
 """
 import json
 import math
 import os
 
-import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 
@@ -339,42 +338,24 @@ with tab3:
 
     st.markdown("---")
     st.subheader("Grafik Sebaran & Garis Tren: BMI vs Glukosa")
-    st.caption("Grafik yang menghubungkan tiap data pasien dengan garis serta titik bulat (dots) yang sangat jelas.")
+    st.caption("Grafik interaktif dengan titik bulat (point) besar dan jelas yang terhubung oleh garis.")
 
-    # Menggunakan Matplotlib untuk membuat garis + titik bulat (marker='o')
-    df_plot = pd.DataFrame(data, columns=["ID", "Usia", "BMI", "Glukosa", "TD", "Riwayat", "Kelas"])
-    df_plot = df_plot.sort_values(by="BMI")  # Diurutkan berdasarkan BMI agar garisnya rapi
+    df_chart = pd.DataFrame(
+        [[r[0], r[2], r[3], label(r[6])] for r in data],
+        columns=["Pasien", "BMI", "Glukosa", "Kelas"]
+    )
     
-    df_r = df_plot[df_plot["Kelas"] == 0]
-    df_t = df_plot[df_plot["Kelas"] == 1]
-
-    fig, ax = plt.subplots(figsize=(10, 4.5))
-    fig.patch.set_facecolor('#f8fafc')
-    ax.set_facecolor('#ffffff')
-
-    # Plot Risiko Rendah (Warna Biru Tua + Titik Bulat Besar)
-    ax.plot(df_r["BMI"], df_r["Glukosa"], marker='o', markersize=9, color='#1e40af', 
-            linewidth=2, linestyle='-', label='Risiko Rendah')
-    
-    # Plot Risiko Tinggi (Warna Merah Marun/Gelap + Titik Bulat Besar)
-    ax.plot(df_t["BMI"], df_t["Glukosa"], marker='o', markersize=9, color='#991b1b', 
-            linewidth=2, linestyle='-', label='Risiko Tinggi')
-
-    # Tambahkan Label pada tiap titik bulat (Kode Pasien)
-    for idx, row in df_plot.iterrows():
-        ax.annotate(row["ID"], (row["BMI"], row["Glukosa"]), textcoords="offset points", 
-                    xytext=(0, 7), ha='center', fontsize=8, fontweight='bold', color='#334155')
-
-    ax.set_xlabel("Nilai BMI", fontsize=10, fontweight='bold', color='#1e293b')
-    ax.set_ylabel("Kadar Glukosa (mg/dL)", fontsize=10, fontweight='bold', color='#1e293b')
-    ax.grid(True, linestyle='--', alpha=0.5)
-    ax.legend(loc='upper left', frameon=True, facecolor='#ffffff')
-    
-    # Hilangkan garis tepi atas dan kanan agar bersih
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-
-    st.pyplot(fig)
+    # Vega-Lite spec bawaan Streamlit (membuat titik bulat bundar + garis)
+    chart_spec = {
+        "mark": {"type": "line", "point": {"size": 100, "filled": True}, "strokeWidth": 2.5},
+        "encoding": {
+            "x": {"field": "BMI", "type": "quantitative", "title": "Nilai BMI"},
+            "y": {"field": "Glukosa", "type": "quantitative", "title": "Kadar Glukosa (mg/dL)"},
+            "color": {"field": "Kelas", "type": "nominal", "title": "Kategori Risiko"},
+            "tooltip": [{"field": "Pasien"}, {"field": "BMI"}, {"field": "Glukosa"}, {"field": "Kelas"}]
+        }
+    }
+    st.vega_lite_chart(df_chart, chart_spec, use_container_width=True)
 
     st.markdown("---")
     st.subheader("📋 Ringkasan Rata-Rata Fitur Berdasarkan Kelas Risiko")
